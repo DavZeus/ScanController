@@ -1,6 +1,5 @@
 #include "runner.h"
 
-
 #define _WIN32_WINNT 0x0A00
 
 #include <fmt/format.h>
@@ -21,7 +20,6 @@ auto runner::find_switch(const char* switch_string, int argc, char* argv[]) -> c
 			return argv[i] + switch_length;
 		}
 	}
-	//throw std::exception(fmt::format("Switch {} not found", switch_string).c_str());
 	return nullptr;
 }
 
@@ -32,11 +30,11 @@ auto runner::make_scan() -> void
 	info.cbSize = sizeof(SHELLEXECUTEINFOA);
 	info.fMask = SEE_MASK_NOCLOSEPROCESS;
 	info.hwnd = NULL;
-	info.lpVerb = NULL;
+	info.lpVerb = NULL;//"runas";
 	info.lpFile = full_path.c_str();
 	info.lpParameters = NULL; // or ="";
 	info.lpDirectory = NULL;
-	info.nShow = SW_SHOW; // = SW_HIDE or = SW_SHOW;
+	info.nShow = SW_HIDE; // = SW_HIDE or = SW_SHOW;
 	info.hInstApp = NULL;
 
 	if (!ShellExecuteExA(&info))
@@ -84,6 +82,9 @@ auto runner::start() -> void
 {
 	using namespace boost::asio;
 
+	//
+	fmt::print("Program starting...\n");
+	
 	//Sets step count left
 	auto steps_left = step_count;
 
@@ -96,6 +97,9 @@ auto runner::start() -> void
 	serial.set_option(serial_port_base::stop_bits(serial_port_base::stop_bits::one));
 	serial.set_option(serial_port_base::character_size(8));
 
+	//
+	fmt::print("Opening {}...\n", com_port);
+	
 	//Arduino restart delay
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 
@@ -111,28 +115,29 @@ auto runner::start() -> void
 
 	//Initialization of result file
 	std::ofstream out_file(result_file, std::ios::out | std::ios::binary);
-	out_file << "---\n";
-	
-	//Delay(?)
-	//std::this_thread::sleep_for(std::chrono::seconds(5));
 
 	if (read(serial, r_buf.prepare(sizeof(uint8_t))) == 0)
 	{
 		throw std::exception("No arduino response\n");
 	}
 	r_buf.consume(sizeof(uint8_t));
+
+	//
+	fmt::print("Scanning starting now\n");
 	
 	while (steps_left--)
 	{
-		fmt::print("Step {} of {}\n", 200 - steps_left, 200);
+		fmt::print("Step {} of {}\n", step_count - steps_left, step_count);
 		
 		make_scan();
-
+		
 		//Saving scan to result file
-		std::ifstream in_file(/*scan_path + */scan_file, std::ios::in | std::ios::binary);
-		out_file << in_file.rdbuf() << "---\n";
+		out_file << "---\n";
+		std::ifstream in_file(scan_file, std::ios::in | std::ios::binary);
+		out_file << in_file.rdbuf();
 		
 		//Sending message to make step
+
 		os << min_step;
 		write(serial, buf.data());
 		//Receiving response from arduino about making step
@@ -141,6 +146,7 @@ auto runner::start() -> void
 			throw std::exception("No arduino response\n");
 		}
 		r_buf.consume(sizeof(uint8_t));
+		
 	}
 
 	if (serial.is_open())

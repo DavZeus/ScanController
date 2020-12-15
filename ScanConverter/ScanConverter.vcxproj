@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{eefd7c02-c154-4f38-882c-9060eab4447f}</ProjectGuid>
-    <RootNamespace>ScanController</RootNamespace>
+    <ProjectGuid>{957fb9fb-bb54-41c8-b09c-4feb2f06488f}</ProjectGuid>
+    <RootNamespace>ScanConverter</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -94,13 +94,6 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>MKDIR "$(OutDir)scanner"
-XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
-    </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>RMDIR "$(OutDir)scanner" /S /Q</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -118,13 +111,6 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>MKDIR "$(OutDir)scanner"
-XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
-    </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>RMDIR "$(OutDir)scanner" /S /Q</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -138,13 +124,6 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>MKDIR "$(OutDir)scanner"
-XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
-    </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>RMDIR "$(OutDir)scanner" /S /Q</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -162,20 +141,15 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>MKDIR "$(OutDir)scanner"
-XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
-    </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>RMDIR "$(OutDir)scanner" /S /Q</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="arg_parser.cpp" />
+    <ClCompile Include="converter.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="runner.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="runner.h" />
+    <ClInclude Include="arg_parser.h" />
+    <ClInclude Include="converter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
