@@ -14,11 +14,11 @@ int main(int argc, char* argv[])
 	{
 		runner::parse_arguments(argc, argv);
 		runner::start();
+		fmt::print("Scan result in file {}\n", runner::save_path);
 	}
 	catch (const std::exception& ex)
 	{
 		fmt::print(ex.what());
 	}
-	//Temporary
-	system("pause");
+	
 }
