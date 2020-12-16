@@ -24,9 +24,20 @@ auto runner::find_switch(const char* switch_string, int argc, char* argv[]) -> c
 	return nullptr;
 }
 
+auto runner::win_error() -> void
+{
+	auto errorMessageID = GetLastError();
+	LPSTR messageBuffer = nullptr;
+	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+	std::string error(messageBuffer, size);
+	LocalFree(messageBuffer);
+	throw std::exception(error.c_str());
+}
+
 auto runner::make_scan() -> void
 {
-	const std::string full_path = scan_path + scanner_exe;
+	const std::string full_path = scan_path;
 	SHELLEXECUTEINFOA info{};
 	info.cbSize = sizeof(SHELLEXECUTEINFOA);
 	info.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -54,17 +65,6 @@ auto runner::make_scan() -> void
 		throw std::exception(fmt::format("Scanner exit code is {}\n", code).c_str());
 	}
 	CloseHandle(info.hProcess);
-}
-
-auto runner::win_error() -> void
-{
-	auto errorMessageID = GetLastError();
-	LPSTR messageBuffer = nullptr;
-	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
-	std::string error(messageBuffer, size);
-	LocalFree(messageBuffer);
-	throw std::exception(error.c_str());
 }
 
 auto runner::remove_scan_file() -> void
