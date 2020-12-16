@@ -21,7 +21,7 @@ auto arg_parser::parse_arguments(int argc, char* argv[]) -> void
 		const std::string res = find_switch(element, argc, argv);
 		if (!res.empty())
 		{
-			switch_values.insert(element, res);
+			switch_values.insert({ element, res });
 		}
 	}
 }

@@ -2,6 +2,7 @@
 
 #define _WIN32_WINNT 0x0A00
 
+#include <filesystem>
 #include <fmt/format.h>
 #include <boost/asio.hpp>
 
@@ -66,11 +67,27 @@ auto runner::win_error() -> void
 	throw std::exception(error.c_str());
 }
 
+auto runner::remove_scan_file() -> void
+{
+	if (std::filesystem::exists(scan_file))
+	{
+		std::filesystem::remove(scan_file);
+	}
+}
+
+auto runner::process_scan_file(std::ofstream& out_file) -> void
+{
+	//Saving scan to result file
+	std::ifstream in_file(scan_file, std::ios::in);
+	in_file.imbue(std::locale(""));
+	out_file << in_file.rdbuf() << "---\n";
+	
+	remove_scan_file();
+}
+
 auto runner::parse_arguments(int argc, char* argv[]) -> void
 {
-	auto *res = find_switch(scan_path_switch, argc, argv);
-	if (res) scan_path = res;
-	res = find_switch(save_path_switch, argc, argv);
+	auto* res = find_switch(result_file_switch, argc, argv);
 	if (res) save_path = res;
 	res = find_switch(step_count_switch, argc, argv);
 	if (res) step_count = std::stoi(res);
@@ -98,7 +115,7 @@ auto runner::start() -> void
 	serial.set_option(serial_port_base::character_size(8));
 
 	//
-	fmt::print("Opening {}...\n", com_port);
+	fmt::print("Connecting to arduino board via {}...\n", com_port);
 	
 	//Arduino restart delay
 	std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -109,12 +126,21 @@ auto runner::start() -> void
 	//Receive from arduino buffer
 	streambuf r_buf;
 
-	//Send to arduino one turn step count
+
+	//
+	fmt::print("Sending settings...\n");
+	
+	//Send one turn step count to arduino 
 	os << step_count;
 	write(serial, buf.data());
 
+	//Remove old scan_file
+	//TODO: Is remove needed?
+	remove_scan_file();
+	
 	//Initialization of result file
-	std::ofstream out_file(result_file, std::ios::out | std::ios::binary);
+	std::ofstream out_file(result_file, std::ios::out);
+	out_file << "x-z\n";
 
 	if (read(serial, r_buf.prepare(sizeof(uint8_t))) == 0)
 	{
@@ -123,18 +149,15 @@ auto runner::start() -> void
 	r_buf.consume(sizeof(uint8_t));
 
 	//
-	fmt::print("Scanning starting now\n");
+	fmt::print("Scanning starts now.\n");
 	
 	while (steps_left--)
 	{
-		fmt::print("Step {} of {}\n", step_count - steps_left, step_count);
+		fmt::print("\rStep {} of {}", step_count - steps_left, step_count);
 		
 		make_scan();
-		
-		//Saving scan to result file
-		out_file << "---\n";
-		std::ifstream in_file(scan_file, std::ios::in | std::ios::binary);
-		out_file << in_file.rdbuf();
+
+		process_scan_file(out_file);
 		
 		//Sending message to make step
 
@@ -148,7 +171,8 @@ auto runner::start() -> void
 		r_buf.consume(sizeof(uint8_t));
 		
 	}
-
+	out_file << "---";
+	fmt::print("\n");
 	if (serial.is_open())
 	{
 		serial.close();
