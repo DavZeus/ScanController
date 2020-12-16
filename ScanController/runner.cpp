@@ -38,33 +38,44 @@ auto runner::win_error() -> void
 auto runner::make_scan() -> void
 {
 	const std::string full_path = scan_path;
-	SHELLEXECUTEINFOA info{};
-	info.cbSize = sizeof(SHELLEXECUTEINFOA);
-	info.fMask = SEE_MASK_NOCLOSEPROCESS;
-	info.hwnd = NULL;
-	info.lpVerb = NULL;//"runas";
-	info.lpFile = full_path.c_str();
-	info.lpParameters = NULL; // or ="";
-	info.lpDirectory = NULL;
-	info.nShow = SW_HIDE; // = SW_HIDE or = SW_SHOW;
-	info.hInstApp = NULL;
 
-	if (!ShellExecuteExA(&info))
+	STARTUPINFOA si;
+	PROCESS_INFORMATION pi;
+	char* scanner = new char[scan_path.length() + 1];
+	std::char_traits<char>::copy(
+		scanner, 
+		scan_path.c_str(), 
+		scan_path.length() + 1);
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(&pi, sizeof(pi));
+	if (!CreateProcessA(
+		NULL,
+		scanner,
+		NULL,
+		NULL,
+		FALSE,
+		0,
+		NULL,
+		NULL,
+		&si,
+		&pi
+	))
 	{
 		win_error();
 	}
-
-	if (WaitForSingleObject(info.hProcess, INFINITE) != WAIT_OBJECT_0)
+	if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0)
 	{
 		win_error();
 	}
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
 	DWORD code;
-	GetExitCodeProcess(info.hProcess, &code);
+	GetExitCodeProcess(pi.hProcess, &code);
 	if (code != 0)
 	{
 		throw std::exception(fmt::format("Scanner exit code is {}\n", code).c_str());
 	}
-	CloseHandle(info.hProcess);
 }
 
 auto runner::remove_scan_file() -> void

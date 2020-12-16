@@ -22,8 +22,8 @@ class runner
 	static auto process_scan_file(std::ofstream& out_file) -> void;
 	
 public:
-	constexpr static char scan_file[] = "afdata1.txt";
-	constexpr static char scan_path[] = "scanner\\PMEXE.exe";
+	inline const static std::string scan_file = "afdata1.txt";
+	inline const static std::string scan_path = "scanner\\PMEXE.exe";
 
 	inline static std::string save_path;
 	inline static int         step_count{ 200 };
