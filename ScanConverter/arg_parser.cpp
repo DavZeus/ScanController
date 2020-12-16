@@ -1,7 +1,7 @@
 #include "arg_parser.h"
 
 
-auto arg_parser::find_switch(const std::string& switch_string, int argc, char* argv[]) -> std::string
+auto arg_parser::find_switch(const std::string& switch_string, int argc, char* argv[]) -> char*
 {
 	for (int i = 1; i < argc; ++i)
 	{
@@ -11,7 +11,7 @@ auto arg_parser::find_switch(const std::string& switch_string, int argc, char* a
 			return argv[i] + switch_string.length();
 		}
 	}
-	return std::string();
+	return nullptr;
 }
 
 auto arg_parser::parse_arguments(int argc, char* argv[]) -> void

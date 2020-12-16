@@ -25,7 +25,7 @@ public:
 	inline static std::map<std::string, std::string> switch_values;
 private:
 	//Switch search in program arguments
-	static auto find_switch(const std::string& switch_string, int argc, char* argv[]) -> std::string;
+	static auto find_switch(const std::string& switch_string, int argc, char* argv[]) -> char*;
 
 public:
 	//Default values
