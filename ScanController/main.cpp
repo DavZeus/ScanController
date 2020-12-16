@@ -1,15 +1,12 @@
+#include <iostream>
 #include <fmt/core.h>
 
 #include "runner.h"
 
-#include <Windows.h>
 
 int main(int argc, char* argv[])
 {
-	//Temporary
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
-	//
+	std::cout.imbue(std::locale(""));
 	try
 	{
 		runner::parse_arguments(argc, argv);
