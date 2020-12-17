@@ -5,9 +5,6 @@
 
 class runner
 {
-	constexpr static char result_file[] = "full_result.txt";
-
-	constexpr static char result_file_switch[] = "-result_file=";
 	constexpr static char step_count_switch[]  = "-steps=";
 	constexpr static char com_port_switch[]    = "-com=";
 
@@ -25,7 +22,8 @@ public:
 	inline const static std::string scan_file = "afdata1.txt";
 	inline const static std::string scan_path = "scanner\\PMEXE.exe";
 
-	inline static std::string save_path;
+	constexpr static char result_file[] = "full_result.txt";
+
 	inline static int         step_count{ 200 };
 	inline static std::string com_port  { "COM" };
 	

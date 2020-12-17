@@ -6,16 +6,15 @@
 
 int main(int argc, char* argv[])
 {
-	std::cout.imbue(std::locale(""));
+	std::locale::global(std::locale(""));
 	try
 	{
 		runner::parse_arguments(argc, argv);
 		runner::start();
-		fmt::print("Scan result in file {}\n", runner::save_path);
+		fmt::print("Scan in file {}\n", runner::result_file);
 	}
 	catch (const std::exception& ex)
 	{
-		fmt::print(ex.what());
+		fmt::print("\n", ex.what());
 	}
-	
 }
