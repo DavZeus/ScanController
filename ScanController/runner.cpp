@@ -68,14 +68,18 @@ auto runner::make_scan() -> void
 	{
 		win_error();
 	}
-	CloseHandle(pi.hProcess);
-	CloseHandle(pi.hThread);
-	DWORD code;
-	GetExitCodeProcess(pi.hProcess, &code);
+	//TODO: Add security policies to be able to get exit code
+	/*DWORD code;
+	if (!GetExitCodeProcess(pi.hProcess, &code))
+	{
+		win_error();
+	}
 	if (code != 0)
 	{
 		throw std::exception(fmt::format("Scanner exit code is {}\n", code).c_str());
-	}
+	}*/
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
 }
 
 auto runner::remove_scan_file() -> void
@@ -88,19 +92,18 @@ auto runner::remove_scan_file() -> void
 
 auto runner::process_scan_file(std::ofstream& out_file) -> void
 {
-	//Saving scan to result file
+	//Save scan to result file
 	std::ifstream in_file(scan_file, std::ios::in);
-	in_file.imbue(std::locale(""));
 	out_file << in_file.rdbuf() << "---\n";
+	in_file.close();
 	
+	//Remove scan file 
 	remove_scan_file();
 }
 
 auto runner::parse_arguments(int argc, char* argv[]) -> void
 {
-	auto* res = find_switch(result_file_switch, argc, argv);
-	if (res) save_path = res;
-	res = find_switch(step_count_switch, argc, argv);
+	auto* res = find_switch(step_count_switch, argc, argv);
 	if (res) step_count = std::stoi(res);
 	res = find_switch(com_port_switch, argc, argv);
 	com_port.append(res ? res : "4");
@@ -110,13 +113,13 @@ auto runner::start() -> void
 {
 	using namespace boost::asio;
 
-	//
+	//Print status
 	fmt::print("Program starting...\n");
 	
-	//Sets step count left
+	//Set step count left
 	auto steps_left = step_count;
 
-	//Serial port initialization
+	//Initialize serial port
 	io_service io_service;
 	serial_port serial(io_service, com_port);
 	serial.set_option(serial_port_base::baud_rate(9600));
@@ -125,65 +128,68 @@ auto runner::start() -> void
 	serial.set_option(serial_port_base::stop_bits(serial_port_base::stop_bits::one));
 	serial.set_option(serial_port_base::character_size(8));
 
-	//
+	//Print status
 	fmt::print("Connecting to arduino board via {}...\n", com_port);
 	
-	//Arduino restart delay
+	//Wait arduino restart
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 
-	//Send to arduino buffer
-	streambuf buf;
-	std::ostream os(&buf);
-	//Receive from arduino buffer
-	streambuf r_buf;
+	//Output buffer / 
+	streambuf o_buf;
+	std::ostream os(&o_buf);
+	//Input buffer / Response
+	streambuf i_buf;
 
-
-	//
+	//Print status
 	fmt::print("Sending settings...\n");
 	
 	//Send one turn step count to arduino 
 	os << step_count;
-	write(serial, buf.data());
+	write(serial, o_buf.data());
 
 	//Remove old scan_file
-	//TODO: Is remove needed?
 	remove_scan_file();
 	
-	//Initialization of result file
+	//Initialize result file
 	std::ofstream out_file(result_file, std::ios::out);
 	out_file << "x-z\n";
-
-	if (read(serial, r_buf.prepare(sizeof(uint8_t))) == 0)
+	
+	//Check board response
+	if (read(serial, i_buf.prepare(sizeof(uint8_t))) == 0)
 	{
 		throw std::exception("No arduino response\n");
 	}
-	r_buf.consume(sizeof(uint8_t));
+	i_buf.consume(sizeof(uint8_t));
 
-	//
+	//Print status
 	fmt::print("Scanning starts now.\n");
-	
+
+	//Scan loop
 	while (steps_left--)
 	{
+		//Print status
 		fmt::print("\rStep {} of {}", step_count - steps_left, step_count);
 		
 		make_scan();
 
 		process_scan_file(out_file);
 		
-		//Sending message to make step
-
+		//Send signal to make step
 		os << min_step;
-		write(serial, buf.data());
-		//Receiving response from arduino about making step
-		if (read(serial, r_buf.prepare(sizeof(uint8_t))) == 0)
+		write(serial, o_buf.data());
+
+		//Check board response
+		if (read(serial, i_buf.prepare(sizeof(uint8_t))) == 0)
 		{
 			throw std::exception("No arduino response\n");
 		}
-		r_buf.consume(sizeof(uint8_t));
+		i_buf.consume(sizeof(uint8_t));
 		
 	}
-	out_file << "---";
+	
 	fmt::print("\n");
+
+	//Close serial port
 	if (serial.is_open())
 	{
 		serial.close();
