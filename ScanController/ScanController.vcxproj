@@ -172,9 +172,11 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="options.cpp" />
     <ClCompile Include="runner.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="options.h" />
     <ClInclude Include="runner.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
