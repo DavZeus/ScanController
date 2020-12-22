@@ -15,6 +15,6 @@ int main(int argc, char* argv[])
 	}
 	catch (const std::exception& ex)
 	{
-		fmt::print("\n{}\n", ex.what());
+		fmt::print(stderr, "\n{}\n", ex.what());
 	}
 }
