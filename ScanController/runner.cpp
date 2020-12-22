@@ -1,6 +1,8 @@
 #include "runner.h"
 
+#ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0A00
+#endif
 
 #include <filesystem>
 #include <fmt/format.h>
@@ -93,8 +95,16 @@ auto runner::remove_scan_file() -> void
 auto runner::process_scan_file(std::ofstream& out_file) -> void
 {
 	//Save scan to result file
+	if (!out_file)
+	{
+		throw std::exception("Output file is not accessible!");
+	}
 	std::ifstream in_file(scan_file, std::ios::in);
-	out_file << in_file.rdbuf() << "---\n";
+	if (!in_file)
+	{
+		throw std::exception("There is no scan file!");
+	}
+	out_file << '\n' << in_file.rdbuf() << "---";
 	in_file.close();
 	
 	//Remove scan file 
@@ -157,7 +167,7 @@ auto runner::start() -> void
 	//Check board response
 	if (read(serial, i_buf.prepare(sizeof(uint8_t))) == 0)
 	{
-		throw std::exception("No arduino response\n");
+		throw std::exception("No arduino response");
 	}
 	i_buf.consume(sizeof(uint8_t));
 
@@ -181,7 +191,7 @@ auto runner::start() -> void
 		//Check board response
 		if (read(serial, i_buf.prepare(sizeof(uint8_t))) == 0)
 		{
-			throw std::exception("No arduino response\n");
+			throw std::exception("No arduino response");
 		}
 		i_buf.consume(sizeof(uint8_t));
 		
