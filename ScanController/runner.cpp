@@ -162,7 +162,7 @@ auto runner::start() -> void
 	
 	//Initialize result file
 	std::ofstream out_file(result_file, std::ios::out);
-	out_file << "x-z\n";
+	out_file << "x-z";
 	
 	//Check board response
 	if (read(serial, i_buf.prepare(sizeof(uint8_t))) == 0)
