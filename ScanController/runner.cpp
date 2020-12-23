@@ -180,9 +180,27 @@ auto runner::start() -> void
 		//Print status
 		fmt::print("\rStep {} of {}", step_count - steps_left, step_count);
 		
-		make_scan();
+		uint8_t rescan_counter = 0;
+		while (true)
+		{
+			try
+			{
 
-		process_scan_file(out_file);
+				make_scan();
+
+				process_scan_file(out_file);
+
+				break;
+			}
+			catch (...)
+			{
+				if (rescan_counter == 10)
+				{
+					throw;
+				}
+				++rescan_counter;
+			}
+		}
 		
 		//Send signal to make step
 		os << min_step;
