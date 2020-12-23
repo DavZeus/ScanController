@@ -2,14 +2,14 @@
 
 #include <boost/program_options.hpp>
 
-class options
+class sc_options
 {
 	boost::program_options::variables_map vm_;
-
-
+public:
 	constexpr static char help_switch[] = "help";
 	constexpr static char com_switch[] = "com";
-public:
-	auto parse_options(int argc, char* argv[]);
+
+	auto parse(int argc, char* argv[]);
+	[[nodiscard]] auto get_value(const std::string& key) const;
 };
 
