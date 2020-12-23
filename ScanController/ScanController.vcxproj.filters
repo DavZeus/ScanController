@@ -21,9 +21,15 @@
     <ClCompile Include="runner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sc_options.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="runner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sc_options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
