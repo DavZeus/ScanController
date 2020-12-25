@@ -6,7 +6,7 @@ auto sc_options::parse(int argc, char* argv[]) -> void
 	options_description description("Allowed sc_options");
 	description.add_options()
 		(help_switch, "produce help message")
-		(com_switch, value<int>()->default_value(static_cast<uint8_t>(4)));
+		(com_switch, value<short>()->default_value(static_cast<short>(4)));
 	store(parse_command_line(argc, argv, description), vm_);
 	notify(vm_);
 }
