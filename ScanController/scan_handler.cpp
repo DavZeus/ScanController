@@ -1,4 +1,4 @@
-#include "runner.h"
+#include "scan_handler.h"
 
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0A00
@@ -12,7 +12,7 @@
 
 #include <fstream>
 
-auto runner::find_switch(const char* switch_string, int argc, char* argv[]) -> char*
+auto scan_handler::find_switch(const char* switch_string, int argc, char* argv[]) -> char*
 {
 	const auto switch_length = std::char_traits<char>::length(switch_string);
 	for (int i = 1; i < argc; ++i)
@@ -26,7 +26,7 @@ auto runner::find_switch(const char* switch_string, int argc, char* argv[]) -> c
 	return nullptr;
 }
 
-auto runner::win_error() -> void
+auto scan_handler::win_error() -> void
 {
 	auto errorMessageID = GetLastError();
 	LPSTR messageBuffer = nullptr;
@@ -37,7 +37,7 @@ auto runner::win_error() -> void
 	throw std::exception(error.c_str());
 }
 
-auto runner::make_scan() -> void
+auto scan_handler::make_scan() -> void
 {
 	const std::string full_path = scan_path;
 
@@ -84,7 +84,7 @@ auto runner::make_scan() -> void
 	CloseHandle(pi.hThread);
 }
 
-auto runner::remove_scan_file() -> void
+auto scan_handler::remove_scan_file() -> void
 {
 	if (std::filesystem::exists(scan_file))
 	{
@@ -92,7 +92,7 @@ auto runner::remove_scan_file() -> void
 	}
 }
 
-auto runner::process_scan_file(std::ofstream& out_file) -> void
+auto scan_handler::process_scan_file(std::ofstream& out_file) -> void
 {
 	//Save scan to result file
 	if (!out_file)
@@ -111,7 +111,7 @@ auto runner::process_scan_file(std::ofstream& out_file) -> void
 	remove_scan_file();
 }
 
-auto runner::parse_arguments(int argc, char* argv[]) -> void
+auto scan_handler::parse_arguments(int argc, char* argv[]) -> void
 {
 	auto* res = find_switch(step_count_switch, argc, argv);
 	if (res) step_count = std::stoi(res);
@@ -119,7 +119,7 @@ auto runner::parse_arguments(int argc, char* argv[]) -> void
 	com_port.append(res ? res : "4");
 }
 
-auto runner::start() -> void
+auto scan_handler::start() -> void
 {
 	using namespace boost::asio;
 

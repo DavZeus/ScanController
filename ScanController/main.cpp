@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fmt/core.h>
 
-#include "runner.h"
+#include "scan_handler.h"
 #include "sc_options.h"
 
 int main(int argc, char* argv[])
@@ -12,10 +12,9 @@ int main(int argc, char* argv[])
 		sc_options options;
 		options.parse(argc, argv);
 
-		
-		runner::parse_arguments(argc, argv);
-		runner::start();
-		fmt::print("Scan in file {}\n", runner::result_file);
+		scan_handler scanner;
+		scanner.start();
+
 	}
 	catch (const std::exception& ex)
 	{

@@ -3,7 +3,7 @@
 
 #include <string>
 
-class runner
+class scan_handler
 {
 	constexpr static char step_count_switch[]  = "-steps=";
 	constexpr static char com_port_switch[]    = "-com=";

@@ -18,18 +18,18 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="runner.cpp">
+    <ClCompile Include="sc_options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sc_options.cpp">
+    <ClCompile Include="scan_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="runner.h">
+    <ClInclude Include="sc_options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sc_options.h">
+    <ClInclude Include="scan_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
