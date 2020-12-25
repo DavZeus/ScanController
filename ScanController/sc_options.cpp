@@ -1,6 +1,6 @@
 #include "sc_options.h"
 
-auto sc_options::parse(int argc, char* argv[])
+auto sc_options::parse(int argc, char* argv[]) -> void
 {
 	using namespace boost::program_options;
 	options_description description("Allowed sc_options");
