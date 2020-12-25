@@ -10,6 +10,7 @@ public:
 	constexpr static char com_switch[] = "com";
 
 	auto parse(int argc, char* argv[]) -> void;
-	[[nodiscard]] auto get_value(const std::string& key) const;
+	[[nodiscard]] auto check_value(const std::string& key) const -> size_t;
+	[[nodiscard]] auto get_value(const std::string& key) const -> boost::program_options::variable_value;
 };
 
