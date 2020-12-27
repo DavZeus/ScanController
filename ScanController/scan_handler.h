@@ -1,33 +1,50 @@
 #pragma once
 
-
+#include <boost/asio.hpp>
 #include <string>
 
-class scan_handler
-{
-	constexpr static char step_count_switch[]  = "-steps=";
-	constexpr static char com_port_switch[]    = "-com=";
+class scan_handler {
+  constexpr static int min_step = 1;
+  constexpr static int step_count = 200;
+  constexpr static int baud_rate = 9600;
+  constexpr static int char_size = 8;
+  constexpr static unsigned restart_delay = 5;
 
-	constexpr static int min_step = 1;
+  std::string result_file_ = "full_result.txt";
+  std::string scan_file_ = "afdata1.txt";
+  std::string scanner_path_ = "scanner\\PMEXE.exe";
 
-	static auto find_switch(const char* switch_string, int argc, char* argv[]) -> char*;
+  [[noreturn]] static auto win_error() -> void;
 
-	[[noreturn]] static auto win_error() -> void;
+  static auto set_serial_parameters(boost::asio::serial_port &port) -> void;
 
-	static auto make_scan() -> void;
-	static auto remove_scan_file() -> void;
-	static auto process_scan_file(std::ofstream& out_file) -> void;
-	
+  template <class T>
+  auto send_to_board(boost::asio::serial_port &port, T &message) -> void;
+  static auto check_board_response(boost::asio::serial_port &port) -> bool;
+
+  auto make_scan() const -> void;
+  auto remove_scan_file() const -> void;
+  auto process_scan_file(std::ofstream &out_file) const -> void;
+
+  std::string com_port_;
+
 public:
-	inline const static std::string scan_file = "afdata1.txt";
-	inline const static std::string scan_path = "scanner\\PMEXE.exe";
-
-	constexpr static char result_file[] = "full_result.txt";
-
-	inline static int         step_count{ 200 };
-	inline static std::string com_port  { "COM" };
-	
-	static auto parse_arguments(int argc, char* argv[]) -> void;
-
-	static auto start() -> void;
+  explicit scan_handler(std::string com_port);
+  auto start() -> void;
 };
+
+template <class T>
+auto scan_handler::send_to_board(boost::asio::serial_port &port, T &message)
+    -> void {
+  // Output buffer
+  boost::asio::streambuf o_buf;
+
+  // Stream to write message
+  std::ostream os(&o_buf);
+
+  // Write message to buffer
+  os << message;
+
+  // Send message to arduino board
+  write(port, o_buf.data());
+}

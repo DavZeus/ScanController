@@ -1,207 +1,173 @@
-#include "scan_handler.h"
+
 
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0A00
 #endif
 
+#include "scan_handler.h"
+
 #include <filesystem>
 #include <fmt/format.h>
-#include <boost/asio.hpp>
-
-#include <shellapi.h>
-
 #include <fstream>
+#include <shellapi.h>
+#include <utility>
 
-auto scan_handler::find_switch(const char* switch_string, int argc, char* argv[]) -> char*
-{
-	const auto switch_length = std::char_traits<char>::length(switch_string);
-	for (int i = 1; i < argc; ++i)
-	{
-		const auto res = std::char_traits<char>::compare(argv[i], switch_string, switch_length);
-		if (res == 0)
-		{
-			return argv[i] + switch_length;
-		}
-	}
-	return nullptr;
+auto scan_handler::win_error() -> void {
+  const auto error_message_id = GetLastError();
+  LPSTR message_buffer = nullptr;
+  const size_t size = FormatMessageA(
+      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+          FORMAT_MESSAGE_IGNORE_INSERTS,
+      nullptr, error_message_id, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      LPSTR(&message_buffer), 0, nullptr);
+  const std::string error(message_buffer, size);
+  LocalFree(message_buffer);
+  throw std::exception(error.c_str());
 }
 
-auto scan_handler::win_error() -> void
-{
-	auto errorMessageID = GetLastError();
-	LPSTR messageBuffer = nullptr;
-	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
-	std::string error(messageBuffer, size);
-	LocalFree(messageBuffer);
-	throw std::exception(error.c_str());
+auto scan_handler::set_serial_parameters(boost::asio::serial_port &port)
+    -> void {
+  using namespace boost::asio;
+
+  port.set_option(serial_port_base::baud_rate(baud_rate));
+  port.set_option(
+      serial_port_base::flow_control(serial_port_base::flow_control::none));
+  port.set_option(serial_port_base::parity(serial_port_base::parity::none));
+  port.set_option(
+      serial_port_base::stop_bits(serial_port_base::stop_bits::one));
+  port.set_option(serial_port_base::character_size(char_size));
 }
 
-auto scan_handler::make_scan() -> void
-{
-	const std::string full_path = scan_path;
+auto scan_handler::check_board_response(boost::asio::serial_port &port)
+    -> bool {
+  // Input buffer / Response
+  boost::asio::streambuf i_buf;
 
-	STARTUPINFOA si;
-	PROCESS_INFORMATION pi;
-	char* scanner = new char[scan_path.length() + 1];
-	std::char_traits<char>::copy(
-		scanner, 
-		scan_path.c_str(), 
-		scan_path.length() + 1);
-	ZeroMemory(&si, sizeof(si));
-	si.cb = sizeof(si);
-	ZeroMemory(&pi, sizeof(pi));
-	if (!CreateProcessA(
-		NULL,
-		scanner,
-		NULL,
-		NULL,
-		FALSE,
-		0,
-		NULL,
-		NULL,
-		&si,
-		&pi
-	))
-	{
-		win_error();
-	}
-	if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0)
-	{
-		win_error();
-	}
-	//TODO: Add security policies to be able to get exit code
-	/*DWORD code;
-	if (!GetExitCodeProcess(pi.hProcess, &code))
-	{
-		win_error();
-	}
-	if (code != 0)
-	{
-		throw std::exception(fmt::format("Scanner exit code is {}\n", code).c_str());
-	}*/
-	CloseHandle(pi.hProcess);
-	CloseHandle(pi.hThread);
+  if (read(port, i_buf.prepare(sizeof(uint8_t))) == 0) {
+    return false;
+  }
+  i_buf.consume(sizeof(uint8_t));
+
+  return true;
 }
 
-auto scan_handler::remove_scan_file() -> void
-{
-	if (std::filesystem::exists(scan_file))
-	{
-		std::filesystem::remove(scan_file);
-	}
+auto scan_handler::make_scan() const -> void {
+  STARTUPINFOA si{};
+  PROCESS_INFORMATION pi{};
+  const auto sc_path = std::make_unique<char[]>(scanner_path_.length() + 1);
+  std::char_traits<char>::copy(sc_path.get(), scanner_path_.c_str(),
+                               scanner_path_.length() + 1);
+  // ZeroMemory(&si, sizeof si);
+  si.cb = sizeof si;
+  // ZeroMemory(&pi, sizeof pi);
+  if (!CreateProcessA(nullptr, sc_path.get(), nullptr, nullptr, FALSE, 0,
+                      nullptr, nullptr, &si, &pi)) {
+    win_error();
+  }
+  if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {
+    win_error();
+  }
+  // TODO: Add security policies to be able to get exit code
+  /*DWORD code;
+  if (!GetExitCodeProcess(pi.hProcess, &code))
+  {
+                  win_error();
+  }
+  if (code != 0)
+  {
+                  throw std::exception(fmt::format("Scanner exit code is {}\n",
+  code).c_str());
+  }*/
+  CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
 }
 
-auto scan_handler::process_scan_file(std::ofstream& out_file) -> void
-{
-	//Save scan to result file
-	if (!out_file)
-	{
-		throw std::exception("Output file is not accessible!");
-	}
-	std::ifstream in_file(scan_file, std::ios::in);
-	if (!in_file)
-	{
-		throw std::exception("There is no scan file!");
-	}
-	out_file << '\n' << in_file.rdbuf() << "---";
-	in_file.close();
-	
-	//Remove scan file 
-	remove_scan_file();
+void scan_handler::remove_scan_file() const {
+  if (std::filesystem::exists(scan_file_)) {
+    std::filesystem::remove(scan_file_);
+  }
 }
 
-auto scan_handler::parse_arguments(int argc, char* argv[]) -> void
-{
-	auto* res = find_switch(step_count_switch, argc, argv);
-	if (res) step_count = std::stoi(res);
-	res = find_switch(com_port_switch, argc, argv);
-	com_port.append(res ? res : "4");
+auto scan_handler::process_scan_file(std::ofstream &out_file) const -> void {
+  // Save scan to result file
+  if (!out_file) {
+    throw std::exception("Output file is not accessible!");
+  }
+  std::ifstream in_file(scan_file_, std::ios::in);
+  if (!in_file) {
+    throw std::exception("There is no scan file!");
+  }
+  out_file << '\n' << in_file.rdbuf() << "---";
+  in_file.close();
+
+  // Remove scan file
+  remove_scan_file();
 }
 
-auto scan_handler::start() -> void
-{
-	using namespace boost::asio;
+scan_handler::scan_handler(std::string com_port)
+    : com_port_(std::move(com_port)) {}
 
-	//Print status
-	fmt::print("Program starting...\n");
-	
-	//Set step count left
-	auto steps_left = step_count;
+auto scan_handler::start() -> void {
+  // Print status
+  fmt::print("Program starting...\n");
 
-	//Initialize serial port
-	io_service io_service;
-	serial_port serial(io_service, com_port);
-	serial.set_option(serial_port_base::baud_rate(9600));
-	serial.set_option(serial_port_base::flow_control(serial_port_base::flow_control::none));
-	serial.set_option(serial_port_base::parity(serial_port_base::parity::none));
-	serial.set_option(serial_port_base::stop_bits(serial_port_base::stop_bits::one));
-	serial.set_option(serial_port_base::character_size(8));
+  // Initialize serial port
+  boost::asio::io_service io_service;
+  boost::asio::serial_port port(io_service, com_port_);
+  set_serial_parameters(port);
 
-	//Print status
-	fmt::print("Connecting to arduino board via {}...\n", com_port);
-	
-	//Wait arduino restart
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+  // Print status
+  fmt::print("Connecting to arduino board via {}...\n", com_port_);
 
-	//Output buffer / 
-	streambuf o_buf;
-	std::ostream os(&o_buf);
-	//Input buffer / Response
-	streambuf i_buf;
+  // Wait arduino restart
+  std::this_thread::sleep_for(std::chrono::seconds(restart_delay));
 
-	//Print status
-	fmt::print("Sending settings...\n");
-	
-	//Send one turn step count to arduino 
-	os << step_count;
-	write(serial, o_buf.data());
+  // Print status
+  fmt::print("Sending settings...\n");
 
-	//Remove old scan_file
-	remove_scan_file();
-	
-	//Initialize result file
-	std::ofstream out_file(result_file, std::ios::out);
-	out_file << "x-z";
-	
-	//Check board response
-	if (read(serial, i_buf.prepare(sizeof(uint8_t))) == 0)
-	{
-		throw std::exception("No arduino response");
-	}
-	i_buf.consume(sizeof(uint8_t));
+  // Send one turn step count to arduino
+  send_to_board(port, step_count);
 
-	//Print status
-	fmt::print("Scanning starts now.\n");
+  // Remove old scan_file
+  remove_scan_file();
 
-	//Scan loop
-	while (steps_left--)
-	{
-		//Print status
-		fmt::print("\rStep {} of {}", step_count - steps_left, step_count);
-		
-		make_scan();
+  // Initialize result file
+  std::ofstream out_file(result_file_, std::ios::out);
+  out_file << "x-z";
 
-		process_scan_file(out_file);
-		
-		//Send signal to make step
-		os << min_step;
-		write(serial, o_buf.data());
+  // Check board response
+  if (!check_board_response(port)) {
+    throw std::exception("No arduino response");
+  }
 
-		//Check board response
-		if (read(serial, i_buf.prepare(sizeof(uint8_t))) == 0)
-		{
-			throw std::exception("No arduino response");
-		}
-		i_buf.consume(sizeof(uint8_t));
-		
-	}
-	
-	fmt::print("\n");
+  // Print status
+  fmt::print("Scanning starts now.\n");
 
-	//Close serial port
-	if (serial.is_open())
-	{
-		serial.close();
-	}
+  // Set step count left
+  auto steps_left = step_count;
+
+  // Scan loop
+  while (steps_left--) {
+    // Print status
+    fmt::print("\rStep {} of {}", step_count - steps_left, step_count);
+
+    make_scan();
+
+    process_scan_file(out_file);
+
+    // Send signal to make step
+    send_to_board(port, min_step);
+
+    // Check board response
+    if (!check_board_response(port)) {
+      throw std::exception("No arduino response");
+    }
+  }
+
+  fmt::print("\n");
+
+  // Close serial port
+  if (port.is_open()) {
+    port.close();
+  }
 }
