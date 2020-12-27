@@ -4,6 +4,8 @@
 #include <string>
 
 class scan_handler {
+  using vertical_points = std::vector<std::pair<float, float>>;
+
   constexpr static int min_step = 1;
   constexpr static int step_count = 200;
   constexpr static int baud_rate = 9600;
@@ -24,13 +26,13 @@ class scan_handler {
 
   auto make_scan() const -> void;
   auto remove_scan_file() const -> void;
-  auto process_scan_file(std::ofstream &out_file) const -> void;
+  auto process_scan_file() const -> vertical_points;
 
   std::string com_port_;
 
 public:
   explicit scan_handler(std::string com_port);
-  auto start() -> void;
+  [[nodiscard]] auto start() -> std::vector<vertical_points>;
 };
 
 template <class T>

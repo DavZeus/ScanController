@@ -88,26 +88,35 @@ void scan_handler::remove_scan_file() const {
   }
 }
 
-auto scan_handler::process_scan_file(std::ofstream &out_file) const -> void {
-  // Save scan to result file
-  if (!out_file) {
-    throw std::exception("Output file is not accessible!");
-  }
+auto scan_handler::process_scan_file() const -> vertical_points {
+  vertical_points points;
+
+  // Open scan file
   std::ifstream in_file(scan_file_, std::ios::in);
   if (!in_file) {
     throw std::exception("There is no scan file!");
   }
-  out_file << '\n' << in_file.rdbuf() << "---";
+
+  while (!in_file.eof()) {
+    static float p_x, p_z;
+    in_file >> p_x >> p_z;
+    points.emplace_back(p_x, p_z);
+  }
+
   in_file.close();
 
   // Remove scan file
   remove_scan_file();
+
+  return points;
 }
 
 scan_handler::scan_handler(std::string com_port)
     : com_port_(std::move(com_port)) {}
 
-auto scan_handler::start() -> void {
+auto scan_handler::start() -> std::vector<vertical_points> {
+  std::vector<vertical_points> verticals;
+
   // Print status
   fmt::print("Program starting...\n");
 
@@ -131,10 +140,6 @@ auto scan_handler::start() -> void {
   // Remove old scan_file
   remove_scan_file();
 
-  // Initialize result file
-  std::ofstream out_file(result_file_, std::ios::out);
-  out_file << "x-z";
-
   // Check board response
   if (!check_board_response(port)) {
     throw std::exception("No arduino response");
@@ -153,7 +158,7 @@ auto scan_handler::start() -> void {
 
     make_scan();
 
-    process_scan_file(out_file);
+    verticals.emplace_back(process_scan_file());
 
     // Send signal to make step
     send_to_board(port, min_step);
@@ -170,4 +175,6 @@ auto scan_handler::start() -> void {
   if (port.is_open()) {
     port.close();
   }
+
+  return verticals;
 }

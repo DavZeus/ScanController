@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
         std::to_string(options.get_value(sc_options::com_switch).as<short>());
 
     scan_handler scanner(com);
-    scanner.start();
+    auto points = scanner.start();
   } catch (const std::exception &ex) {
     fmt::print(stderr, "\n{}\n", ex.what());
   }
