@@ -51,16 +51,14 @@ auto scan_handler::check_board_response(boost::asio::serial_port &port)
   return true;
 }
 
-auto scan_handler::make_scan() const -> void {
+auto scan_handler::make_scan() -> void {
   STARTUPINFOA si{};
   PROCESS_INFORMATION pi{};
-  const auto sc_path = std::make_unique<char[]>(scanner_path_.length() + 1);
-  std::char_traits<char>::copy(sc_path.get(), scanner_path_.c_str(),
-                               scanner_path_.length() + 1);
+  std::string sc_path = scanner_path.data();
   // ZeroMemory(&si, sizeof si);
   si.cb = sizeof si;
   // ZeroMemory(&pi, sizeof pi);
-  if (!CreateProcessA(nullptr, sc_path.get(), nullptr, nullptr, FALSE, 0,
+  if (!CreateProcessA(nullptr, sc_path.data(), nullptr, nullptr, FALSE, 0,
                       nullptr, nullptr, &si, &pi)) {
     win_error();
   }
@@ -83,8 +81,8 @@ auto scan_handler::make_scan() const -> void {
 }
 
 void scan_handler::remove_scan_file() const {
-  if (std::filesystem::exists(scan_file_)) {
-    std::filesystem::remove(scan_file_);
+  if (std::filesystem::exists(scan_file.data())) {
+    std::filesystem::remove(scan_file.data());
   }
 }
 
@@ -92,13 +90,14 @@ auto scan_handler::process_scan_file() const -> vertical_points {
   vertical_points points;
 
   // Open scan file
-  std::ifstream in_file(scan_file_, std::ios::in);
+  std::ifstream in_file(scan_file.data(), std::ios::in);
   if (!in_file) {
     throw std::exception("There is no scan file!");
   }
 
   while (!in_file.eof()) {
-    static float p_x, p_z;
+    static float p_x;
+    static float p_z;
     in_file >> p_x >> p_z;
     points.emplace_back(p_x, p_z);
   }

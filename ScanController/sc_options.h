@@ -5,19 +5,34 @@
 class sc_options {
   boost::program_options::variables_map vm_;
 
-  constexpr static char help_desc[] = "produce help message";
-  constexpr static char com_desc[] = "COM port number";
-  constexpr static char distance_desc[] = "camera distance";
-  constexpr static char cut_desc[] = "model cut level in pixels";
+  constexpr static std::array help_desc = std::to_array("produce help message");
+  constexpr static std::array com_desc = std::to_array("COM port number");
+  constexpr static std::array distance_desc = std::to_array("camera distance");
+  constexpr static std::array cut_desc =
+      std::to_array("model cut level in pixels");
 
 public:
-  constexpr static char help_switch[] = "help";
-  constexpr static char com_switch[] = "com";
-  constexpr static char distance_switch[] = "dist";
-  constexpr static char cut_switch[] = "cut";
+  constexpr static std::array help_switch = std::to_array("help");
+  constexpr static std::array com_switch = std::to_array("com");
+  constexpr static std::array distance_switch = std::to_array("dist");
+  constexpr static std::array cut_switch = std::to_array("cut");
 
   auto parse(int argc, char *argv[]) -> void;
-  [[nodiscard]] auto check_value(const std::string &key) const -> size_t;
-  [[nodiscard]] auto get_value(const std::string &key) const
+  template <size_t N>
+  [[nodiscard]] auto check_value(const std::array<char, N> &key) const
+      -> size_t;
+  template <size_t N>
+  [[nodiscard]] auto get_value(const std::array<char, N> &key) const
       -> boost::program_options::variable_value;
 };
+
+template <size_t N>
+auto sc_options::check_value(const std::array<char, N> &key) const -> size_t {
+  return vm_.count(key.data());
+}
+
+template <size_t N>
+auto sc_options::get_value(const std::array<char, N> &key) const
+    -> boost::program_options::variable_value {
+  return vm_.at(key.data());
+}

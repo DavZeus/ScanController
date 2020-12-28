@@ -12,9 +12,10 @@ class scan_handler {
   constexpr static int char_size = 8;
   constexpr static unsigned restart_delay = 5;
 
-  std::string result_file_ = "full_result.txt";
-  std::string scan_file_ = "afdata1.txt";
-  std::string scanner_path_ = "scanner\\PMEXE.exe";
+  constexpr static std::array result_file = std::to_array("full_result.txt");
+  constexpr static std::array scan_file = std::to_array("afdata1.txt");
+  constexpr static std::array scanner_path =
+      std::to_array("scanner\\PMEXE.exe");
 
   [[noreturn]] static auto win_error() -> void;
 
@@ -24,9 +25,9 @@ class scan_handler {
   static auto send_to_board(boost::asio::serial_port &port, T &message) -> void;
   static auto check_board_response(boost::asio::serial_port &port) -> bool;
 
-  auto make_scan() const -> void;
+  static auto make_scan() -> void;
   auto remove_scan_file() const -> void;
-  auto process_scan_file() const -> vertical_points;
+  [[nodiscard]] auto process_scan_file() const -> vertical_points;
 
   std::string com_port_;
 
