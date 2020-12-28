@@ -80,13 +80,13 @@ auto scan_handler::make_scan() -> void {
   CloseHandle(pi.hThread);
 }
 
-void scan_handler::remove_scan_file() const {
+void scan_handler::remove_scan_file() {
   if (std::filesystem::exists(scan_file.data())) {
     std::filesystem::remove(scan_file.data());
   }
 }
 
-auto scan_handler::process_scan_file() const -> vertical_points {
+auto scan_handler::process_scan_file() -> vertical_points {
   vertical_points points;
 
   // Open scan file

@@ -26,8 +26,8 @@ class scan_handler {
   static auto check_board_response(boost::asio::serial_port &port) -> bool;
 
   static auto make_scan() -> void;
-  auto remove_scan_file() const -> void;
-  [[nodiscard]] auto process_scan_file() const -> vertical_points;
+  static auto remove_scan_file() -> void;
+  [[nodiscard]] static auto process_scan_file() -> vertical_points;
 
   std::string com_port_;
 

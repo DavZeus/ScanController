@@ -28,7 +28,7 @@ auto dimension_converter::convert(const std::vector<vertical> &verticals) const
       const auto z = (camera_distance_ - focus_length) * hz / focus_length;
 
       const auto cos_a = cathetus / p_x;
-      const auto sin_a = std::sqrt(1.f - cos_a * cos_a);
+      const auto sin_a = std::sqrt(1.F - cos_a * cos_a);
       const auto opposing = p_x * sin_a;
       const auto r = cathetus - opposing;
 
