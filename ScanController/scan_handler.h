@@ -4,7 +4,7 @@
 #include <string>
 
 class scan_handler {
-  using vertical_points = std::vector<std::pair<float, float>>;
+  using vertical = std::vector<std::pair<float, float>>;
 
   constexpr static int min_step = 1;
   constexpr static int step_count = 200;
@@ -27,13 +27,13 @@ class scan_handler {
 
   static auto make_scan() -> void;
   static auto remove_scan_file() -> void;
-  [[nodiscard]] static auto process_scan_file() -> vertical_points;
+  [[nodiscard]] static auto process_scan_file() -> vertical;
 
   std::string com_port_;
 
 public:
   explicit scan_handler(std::string com_port);
-  [[nodiscard]] auto start() -> std::vector<vertical_points>;
+  [[nodiscard]] auto start() -> std::vector<vertical>;
 };
 
 template <class T>

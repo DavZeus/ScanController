@@ -86,8 +86,8 @@ void scan_handler::remove_scan_file() {
   }
 }
 
-auto scan_handler::process_scan_file() -> vertical_points {
-  vertical_points points;
+auto scan_handler::process_scan_file() -> vertical {
+  vertical points;
 
   // Open scan file
   std::ifstream in_file(scan_file.data(), std::ios::in);
@@ -113,8 +113,8 @@ auto scan_handler::process_scan_file() -> vertical_points {
 scan_handler::scan_handler(std::string com_port)
     : com_port_(std::move(com_port)) {}
 
-auto scan_handler::start() -> std::vector<vertical_points> {
-  std::vector<vertical_points> verticals;
+auto scan_handler::start() -> std::vector<vertical> {
+  std::vector<vertical> verticals;
 
   // Print status
   fmt::print("Program starting...\n");
