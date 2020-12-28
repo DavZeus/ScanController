@@ -175,11 +175,13 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="dimension_converter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sc_options.cpp" />
     <ClCompile Include="scan_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dimension_converter.h" />
     <ClInclude Include="sc_options.h" />
     <ClInclude Include="scan_handler.h" />
   </ItemGroup>

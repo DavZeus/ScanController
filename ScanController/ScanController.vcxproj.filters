@@ -24,12 +24,18 @@
     <ClCompile Include="scan_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dimension_converter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sc_options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scan_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dimension_converter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
