@@ -2,9 +2,14 @@
 
 auto sc_options::parse(int argc, char *argv[]) -> void {
   boost::program_options::options_description description("Allowed sc_options");
-  description.add_options()(help_switch, "produce help message")(
-      com_switch, boost::program_options::value<short>()->default_value(
-                      static_cast<short>(4)));
+  description.add_options()(help_switch, help_desc)(
+      com_switch,
+      boost::program_options::value<short>()->default_value(
+          static_cast<short>(4)),
+      com_desc)(distance_switch, boost::program_options::value<float>(),
+                distance_desc)(
+      cut_switch, boost::program_options::value<float>()->default_value(0.F),
+      cut_desc);
   store(parse_command_line(argc, argv, description), vm_);
   notify(vm_);
 }

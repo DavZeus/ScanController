@@ -21,7 +21,7 @@ class scan_handler {
   static auto set_serial_parameters(boost::asio::serial_port &port) -> void;
 
   template <class T>
-  auto send_to_board(boost::asio::serial_port &port, T &message) -> void;
+  static auto send_to_board(boost::asio::serial_port &port, T &message) -> void;
   static auto check_board_response(boost::asio::serial_port &port) -> bool;
 
   auto make_scan() const -> void;
