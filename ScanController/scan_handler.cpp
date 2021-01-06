@@ -1,7 +1,7 @@
 #include "scan_handler.h"
 
-#include <boost/asio/read.hpp>
 #include <boost/asio/io_service.hpp>
+#include <boost/asio/read.hpp>
 #include <filesystem>
 #include <fmt/format.h>
 #include <fstream>

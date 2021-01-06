@@ -1,17 +1,14 @@
 ﻿#include "model_constructor.h"
 
-
-
-#include <CGAL/compute_average_spacing.h>
-#include <CGAL/grid_simplify_point_set.h>
-#include <CGAL/jet_smooth_point_set.h>
-#include <CGAL/remove_outliers.h>
 #include <CGAL/Advancing_front_surface_reconstruction.h>
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
 #include <CGAL/Scale_space_reconstruction_3/Advancing_front_mesher.h>
 #include <CGAL/Scale_space_reconstruction_3/Jet_smoother.h>
 #include <CGAL/Scale_space_surface_reconstruction_3.h>
-
+#include <CGAL/compute_average_spacing.h>
+#include <CGAL/grid_simplify_point_set.h>
+#include <CGAL/jet_smooth_point_set.h>
+#include <CGAL/remove_outliers.h>
 
 auto model_constructor::remove_outliers_from_set(point_set &points) const
     -> void {
@@ -48,8 +45,8 @@ auto model_constructor::process_additional(point_set &points) const -> void {
   }
 }
 
-auto model_constructor::do_advancing_front_surface(point_set& points) const -> surface_mesh
-{
+auto model_constructor::do_advancing_front_surface(point_set &points) const
+    -> surface_mesh {
   using facet = std::array<std::size_t, 3>; // Triple of indices
   std::vector<facet> facets;
   CGAL::advancing_front_surface_reconstruction(points.points().begin(),
@@ -65,11 +62,10 @@ auto model_constructor::do_advancing_front_surface(point_set& points) const -> s
   CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets,
                                                               output_mesh);
   return output_mesh;
-
 }
 
-auto model_constructor::do_scale_space(point_set& points) const -> surface_mesh
-{
+auto model_constructor::do_scale_space(point_set &points) const
+    -> surface_mesh {
   std::vector<CGAL::Epick::Point_3> vertices;
   std::vector<std::array<std::size_t, 3>> facets;
   CGAL::Surface_mesh<CGAL::Epick::Point_3> output_mesh;
@@ -95,7 +91,6 @@ auto model_constructor::do_scale_space(point_set& points) const -> surface_mesh
   CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets,
                                                               output_mesh);
   return output_mesh;
-
 }
 
 auto model_constructor::make_mesh(point_set &points) const -> surface_mesh {

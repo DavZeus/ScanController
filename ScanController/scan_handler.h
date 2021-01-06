@@ -4,8 +4,8 @@
 #define _WIN32_WINNT 0x0A00
 #endif
 
-#include <boost/asio/streambuf.hpp>
 #include <boost/asio/serial_port.hpp>
+#include <boost/asio/streambuf.hpp>
 #include <boost/asio/write.hpp>
 #include <string>
 
