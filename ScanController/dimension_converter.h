@@ -22,6 +22,6 @@ class dimension_converter {
 
 public:
   explicit dimension_converter(float camera_distance, float cut_level = 0.F);
-  [[nodiscard]] auto convert(const std::vector<vertical> &verticals) const
-      -> point_set;
+  [[nodiscard]] auto convert(std::vector<vertical>&& verticals) const
+  -> point_set;
 };
