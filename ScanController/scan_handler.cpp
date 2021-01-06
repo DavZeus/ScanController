@@ -1,11 +1,7 @@
-
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0A00
-#endif
-
 #include "scan_handler.h"
 
+#include <boost/asio/read.hpp>
+#include <boost/asio/io_service.hpp>
 #include <filesystem>
 #include <fmt/format.h>
 #include <fstream>

@@ -1,6 +1,12 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0A00
+#endif
+
+#include <boost/asio/streambuf.hpp>
+#include <boost/asio/serial_port.hpp>
+#include <boost/asio/write.hpp>
 #include <string>
 
 class scan_handler {
@@ -23,6 +29,7 @@ class scan_handler {
 
   template <class T>
   static auto send_to_board(boost::asio::serial_port &port, T &message) -> void;
+
   static auto check_board_response(boost::asio::serial_port &port) -> bool;
 
   static auto make_scan() -> void;
