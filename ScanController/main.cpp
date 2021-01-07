@@ -1,9 +1,9 @@
-#include <fmt/core.h>
-
 #include "dimension_converter.h"
 #include "model_constructor.h"
 #include "sc_options.h"
 #include "scan_handler.h"
+
+#include <fmt/core.h>
 
 int main(int argc, char *argv[]) {
   std::locale::global(std::locale(""));
