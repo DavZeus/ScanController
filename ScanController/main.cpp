@@ -1,4 +1,5 @@
 #include "dimension_converter.h"
+#include "mesh_writer.h"
 #include "model_constructor.h"
 #include "sc_options.h"
 #include "scan_handler.h"
@@ -21,7 +22,7 @@ int main(int argc, char *argv[]) {
     const model_constructor constructor(
         model_constructor::methods::advancing_front);
     auto mesh = constructor.make_mesh(p);
-
+    mesh_writer::write(mesh);
   } catch (const std::exception &ex) {
     fmt::print(stderr, "\n{}\n", ex.what());
   }
