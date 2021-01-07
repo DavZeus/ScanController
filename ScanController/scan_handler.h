@@ -1,8 +1,6 @@
 #pragma once
 
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0A00
-#endif
+#include "sc_winver.h"
 
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio/streambuf.hpp>

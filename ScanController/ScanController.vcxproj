@@ -190,6 +190,7 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
     <ClInclude Include="model_constructor.h" />
     <ClInclude Include="sc_options.h" />
     <ClInclude Include="scan_handler.h" />
+    <ClInclude Include="sc_winver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

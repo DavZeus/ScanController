@@ -1,5 +1,9 @@
 ﻿#include "model_constructor.h"
 
+#ifndef CGAL_LINKED_WITH_TBB
+#define CGAL_LINKED_WITH_TBB
+#endif
+
 #include <CGAL/Advancing_front_surface_reconstruction.h>
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
 #include <CGAL/Scale_space_reconstruction_3/Advancing_front_mesher.h>

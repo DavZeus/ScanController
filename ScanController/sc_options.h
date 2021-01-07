@@ -1,5 +1,8 @@
 #pragma once
 
+// ReSharper disable once CppUnusedIncludeDirective
+#include "sc_winver.h"
+
 #include <boost/program_options.hpp>
 
 class sc_options {
