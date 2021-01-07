@@ -34,7 +34,7 @@ private:
   auto smooth_set(point_set &points) const -> void;
 
   auto process_additional(point_set &points) const -> void;
-  auto do_advancing_front_surface(point_set &points) const -> surface_mesh;
+  auto do_advancing_front(point_set &points) const -> surface_mesh;
   auto do_scale_space(point_set &points) const -> surface_mesh;
 
 public:

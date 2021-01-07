@@ -49,7 +49,7 @@ auto model_constructor::process_additional(point_set &points) const -> void {
   }
 }
 
-auto model_constructor::do_advancing_front_surface(point_set &points) const
+auto model_constructor::do_advancing_front(point_set &points) const
     -> surface_mesh {
   using facet = std::array<std::size_t, 3>; // Triple of indices
   std::vector<facet> facets;
@@ -101,7 +101,7 @@ auto model_constructor::make_mesh(point_set &points) const -> surface_mesh {
   process_additional(points);
   switch (method_) {
   case methods::advancing_front:
-    return do_advancing_front_surface(points);
+    return do_advancing_front(points);
   case methods::scale_space:
     return do_scale_space(points);
   default:
