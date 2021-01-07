@@ -7,5 +7,5 @@ class mesh_writer {
   using surface_mesh = CGAL::Surface_mesh<CGAL::Epick::Point_3>;
 
 public:
-  static auto write(std::string path, const surface_mesh &mesh);
+  static auto write(std::string path, const surface_mesh &mesh) -> void;
 };

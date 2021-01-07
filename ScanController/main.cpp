@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     const model_constructor constructor(
         model_constructor::methods::advancing_front);
     auto mesh = constructor.make_mesh(p);
-    mesh_writer::write(mesh);
+    mesh_writer::write("model.stl", mesh);
   } catch (const std::exception &ex) {
     fmt::print(stderr, "\n{}\n", ex.what());
   }
