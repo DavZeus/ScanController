@@ -20,11 +20,11 @@ auto dimension_converter::convert(std::vector<vertical> &&verticals) const
         continue;
       }
       const auto hx =
-          (point.first - half_camera_height) * focus_length / 1000.F;
+          (point.first - half_camera_height) * pixel_size / 1000.F;
       const auto p_x = camera_distance_ +
                        (camera_distance_ - focus_length) * hx / focus_length;
       const auto hz =
-          (point.second - half_camera_width) * focus_length / 1000.F;
+          (point.second - half_camera_width) * pixel_size / 1000.F;
       const auto z = (camera_distance_ - focus_length) * hz / focus_length;
 
       const auto cos_a = cathetus / p_x;

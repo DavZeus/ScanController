@@ -19,6 +19,8 @@ auto model_constructor::remove_outliers_from_set(point_set &points) const
   auto outliers_iterator = CGAL::remove_outliers<CGAL::Parallel_tag>(
       points, 24, points.parameters().threshold_percent(5.0));
   points.remove(outliers_iterator, points.end());
+  std::cout << points.number_of_removed_points()
+            << " point(s) removed after simplification." << std::endl;
   points.collect_garbage();
 }
 
@@ -98,6 +100,7 @@ auto model_constructor::do_scale_space(point_set &points) const
 }
 
 auto model_constructor::make_mesh(point_set &points) const -> surface_mesh {
+  std::cout << points.number_of_points() << " point(s) read." << std::endl;
   process_additional(points);
   switch (method_) {
   case methods::advancing_front:
