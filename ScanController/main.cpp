@@ -7,7 +7,6 @@
 #include <fmt/core.h>
 
 int main(int argc, char *argv[]) {
-  std::locale::global(std::locale(""));
   try {
     sc_options options{};
     options.parse(argc, argv);
@@ -17,7 +16,7 @@ int main(int argc, char *argv[]) {
 
     scan_handler scanner(com);
     auto points = scanner.start();
-    const dimension_converter converter(500.F);
+    const dimension_converter converter(384.F, 1450.F);
     auto p = converter.convert(std::move(points));
     const model_constructor constructor(
         model_constructor::methods::advancing_front);
