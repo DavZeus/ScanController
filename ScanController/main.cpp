@@ -4,16 +4,20 @@
 #include "sc_options.h"
 #include "scan_handler.h"
 
-#include <fmt/core.h>
+#include <fmt/ostream.h>
 
 int main(int argc, char *argv[]) {
   try {
     sc_options options{};
     options.parse(argc, argv);
+    if (options.check_value(sc_options::help_switch)) {
+      fmt::print("{}\n", options.get_allowed_options()); 
+      return 0;
+    }
     const auto com =
         "COM" +
         std::to_string(options.get_value(sc_options::com_switch).as<short>());
-
+    
     scan_handler scanner(com);
     auto points = scanner.start();
     const dimension_converter converter(384.F, 1450.F);
