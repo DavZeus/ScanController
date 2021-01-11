@@ -34,8 +34,6 @@ auto model_constructor::simplify_set(point_set &points,
   auto simplification_iterator =
       CGAL::grid_simplify_point_set(points, 2. * spacing);
   points.remove(simplification_iterator, points.end());
-  std::cout << points.number_of_removed_points()
-            << " point(s) removed after simplification." << std::endl;
   points.collect_garbage();
 }
 
