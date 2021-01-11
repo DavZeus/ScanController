@@ -6,6 +6,7 @@
 #include <boost/program_options.hpp>
 
 class sc_options {
+  boost::program_options::options_description description_;
   boost::program_options::variables_map vm_;
 
   constexpr static std::array help_desc = std::to_array("produce help message");
@@ -19,7 +20,7 @@ public:
   constexpr static std::array com_switch = std::to_array("com");
   constexpr static std::array distance_switch = std::to_array("dist");
   constexpr static std::array cut_switch = std::to_array("cut");
-
+  auto get_allowed_options() const -> const boost::program_options::options_description &;
   auto parse(int argc, char *argv[]) -> void;
   template <size_t N>
   [[nodiscard]] auto check_value(const std::array<char, N> &key) const
@@ -27,6 +28,7 @@ public:
   template <size_t N>
   [[nodiscard]] auto get_value(const std::array<char, N> &key) const
       -> boost::program_options::variable_value;
+  sc_options();
 };
 
 template <size_t N>
