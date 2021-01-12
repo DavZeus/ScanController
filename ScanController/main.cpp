@@ -17,7 +17,6 @@ int main(int argc, char *argv[]) {
     const auto com =
         "COM" + std::to_string(
                     options.get_value(sc::options::com_switch).as<short>());
-
     sc::scan_handler scanner(com);
     auto points = scanner.start();
     const sc::dimension_converter converter(380.F, 1460.F);

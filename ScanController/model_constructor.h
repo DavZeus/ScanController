@@ -42,7 +42,7 @@ private:
   auto do_poisson(point_set &points) const -> surface_mesh;
 
 public:
-  auto make_mesh(point_set &points) const -> surface_mesh;
+  auto make_mesh(point_set points) const -> surface_mesh;
 
   explicit model_constructor(methods method, additional_options options = all);
 };

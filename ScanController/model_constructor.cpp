@@ -117,7 +117,7 @@ auto sc::model_constructor::do_poisson(point_set &points) const
   return output_mesh;
 }
 
-auto sc::model_constructor::make_mesh(point_set &points) const -> surface_mesh {
+auto sc::model_constructor::make_mesh(point_set points) const -> surface_mesh {
   process_additional(points);
   switch (method_) {
   case methods::advancing_front:
