@@ -150,11 +150,22 @@ auto scan_handler::start() -> std::vector<vertical> {
   while (steps_left--) {
     // Print status
     fmt::print("\rStep {} of {}", step_count - steps_left, step_count);
+    uint8_t repeat = 0;
+    while (true) {
+      try {
 
-    make_scan();
+        make_scan();
 
-    verticals.emplace_back(process_scan_file());
+        verticals.emplace_back(process_scan_file());
 
+        break;
+      } catch (...) {
+        if (repeat == 10) {
+          throw;
+        }
+        ++repeat;
+      }
+    }
     // Send signal to make step
     send_to_board(port, min_step);
 

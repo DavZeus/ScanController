@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     
     scan_handler scanner(com);
     auto points = scanner.start();
-    const dimension_converter converter(384.F, 1450.F);
+    const dimension_converter converter(380.F, 1460.F);
     auto p = converter.convert(std::move(points));
     const model_constructor constructor(
         model_constructor::methods::advancing_front);
