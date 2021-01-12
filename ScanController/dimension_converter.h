@@ -4,6 +4,8 @@
 #include <CGAL/Point_set_3.h>
 #include <vector>
 
+namespace sc {
+
 class dimension_converter {
   using point_set =
       CGAL::Point_set_3<CGAL::Epick::Point_3, CGAL::Epick::Vector_3>;
@@ -28,3 +30,5 @@ public:
   [[nodiscard]] auto convert(std::vector<vertical> &&verticals) const
       -> point_set;
 };
+
+} // namespace sc

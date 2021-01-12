@@ -18,8 +18,8 @@
 #include <CGAL/poisson_surface_reconstruction.h>
 #include <CGAL/remove_outliers.h>
 
-auto model_constructor::remove_outliers_from_set(point_set &points,
-                                                 size_t k_neighbors) const
+auto sc::model_constructor::remove_outliers_from_set(point_set &points,
+                                                     size_t k_neighbors) const
     -> void {
   auto outliers_iterator = CGAL::remove_outliers<CGAL::Parallel_tag>(
       points, k_neighbors, points.parameters().threshold_percent(5.0));
@@ -27,8 +27,8 @@ auto model_constructor::remove_outliers_from_set(point_set &points,
   points.collect_garbage();
 }
 
-auto model_constructor::simplify_set(point_set &points,
-                                     size_t k_neighbors) const -> void {
+auto sc::model_constructor::simplify_set(point_set &points,
+                                         size_t k_neighbors) const -> void {
   const auto spacing =
       CGAL::compute_average_spacing<CGAL::Parallel_tag>(points, k_neighbors);
   auto simplification_iterator =
@@ -37,12 +37,13 @@ auto model_constructor::simplify_set(point_set &points,
   points.collect_garbage();
 }
 
-auto model_constructor::smooth_set(point_set &points, size_t k_neighbors) const
-    -> void {
+auto sc::model_constructor::smooth_set(point_set &points,
+                                       size_t k_neighbors) const -> void {
   CGAL::jet_smooth_point_set<CGAL::Parallel_tag>(points, k_neighbors);
 }
 
-auto model_constructor::process_additional(point_set &points) const -> void {
+auto sc::model_constructor::process_additional(point_set &points) const
+    -> void {
   const auto k_neighbors = CGAL::estimate_global_k_neighbor_scale(points) * 2;
   if (options_ & remove_outliers) {
     remove_outliers_from_set(points, k_neighbors);
@@ -55,7 +56,7 @@ auto model_constructor::process_additional(point_set &points) const -> void {
   }
 }
 
-auto model_constructor::do_advancing_front(point_set &points) const
+auto sc::model_constructor::do_advancing_front(point_set &points) const
     -> surface_mesh {
   using facet = std::array<std::size_t, 3>;
   std::vector<facet> facets;
@@ -73,7 +74,7 @@ auto model_constructor::do_advancing_front(point_set &points) const
   return output_mesh;
 }
 
-auto model_constructor::do_scale_space(point_set &points) const
+auto sc::model_constructor::do_scale_space(point_set &points) const
     -> surface_mesh {
   std::vector<CGAL::Epick::Point_3> vertices;
   std::vector<std::array<std::size_t, 3>> facets;
@@ -100,7 +101,8 @@ auto model_constructor::do_scale_space(point_set &points) const
   return output_mesh;
 }
 
-auto model_constructor::do_poisson(point_set &points) const -> surface_mesh {
+auto sc::model_constructor::do_poisson(point_set &points) const
+    -> surface_mesh {
   const auto k_neighbors = CGAL::estimate_global_k_neighbor_scale(points) * 2;
   const auto spacing =
       CGAL::compute_average_spacing<CGAL::Parallel_tag>(points, k_neighbors);
@@ -115,7 +117,7 @@ auto model_constructor::do_poisson(point_set &points) const -> surface_mesh {
   return output_mesh;
 }
 
-auto model_constructor::make_mesh(point_set &points) const -> surface_mesh {
+auto sc::model_constructor::make_mesh(point_set &points) const -> surface_mesh {
   process_additional(points);
   switch (method_) {
   case methods::advancing_front:
@@ -129,5 +131,6 @@ auto model_constructor::make_mesh(point_set &points) const -> surface_mesh {
   }
 }
 
-model_constructor::model_constructor(methods method, additional_options options)
+sc::model_constructor::model_constructor(methods method,
+                                         additional_options options)
     : method_(method), options_(options) {}

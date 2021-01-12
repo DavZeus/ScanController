@@ -8,7 +8,7 @@
 #include <shellapi.h>
 #include <utility>
 
-auto scan_handler::win_error() -> void {
+auto sc::scan_handler::win_error() -> void {
   const auto error_message_id = GetLastError();
   LPSTR message_buffer = nullptr;
   const size_t size = FormatMessageA(
@@ -21,7 +21,7 @@ auto scan_handler::win_error() -> void {
   throw std::exception(error.c_str());
 }
 
-auto scan_handler::set_serial_parameters(boost::asio::serial_port &port)
+auto sc::scan_handler::set_serial_parameters(boost::asio::serial_port &port)
     -> void {
   using namespace boost::asio;
 
@@ -34,7 +34,7 @@ auto scan_handler::set_serial_parameters(boost::asio::serial_port &port)
   port.set_option(serial_port_base::character_size(char_size));
 }
 
-auto scan_handler::check_board_response(boost::asio::serial_port &port)
+auto sc::scan_handler::check_board_response(boost::asio::serial_port &port)
     -> bool {
   // Input buffer / Response
   boost::asio::streambuf i_buf;
@@ -47,7 +47,7 @@ auto scan_handler::check_board_response(boost::asio::serial_port &port)
   return true;
 }
 
-auto scan_handler::make_scan() -> void {
+auto sc::scan_handler::make_scan() -> void {
   STARTUPINFOA si{};
   PROCESS_INFORMATION pi{};
   std::string sc_path = scanner_path.data();
@@ -76,13 +76,13 @@ auto scan_handler::make_scan() -> void {
   CloseHandle(pi.hThread);
 }
 
-void scan_handler::remove_scan_file() {
+auto sc::scan_handler::remove_scan_file() -> void {
   if (std::filesystem::exists(scan_file.data())) {
     std::filesystem::remove(scan_file.data());
   }
 }
 
-auto scan_handler::process_scan_file() -> vertical {
+auto sc::scan_handler::process_scan_file() -> vertical {
   vertical points;
 
   // Open scan file
@@ -106,10 +106,10 @@ auto scan_handler::process_scan_file() -> vertical {
   return points;
 }
 
-scan_handler::scan_handler(std::string com_port)
+sc::scan_handler::scan_handler(std::string com_port)
     : com_port_(std::move(com_port)) {}
 
-auto scan_handler::start() -> std::vector<vertical> {
+auto sc::scan_handler::start() -> std::vector<vertical> {
   std::vector<vertical> verticals;
 
   // Print status

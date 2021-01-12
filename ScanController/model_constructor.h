@@ -4,6 +4,8 @@
 #include <CGAL/Point_set_3.h>
 #include <CGAL/Surface_mesh.h>
 
+namespace sc {
+
 class model_constructor {
   using point_set =
       CGAL::Point_set_3<CGAL::Epick::Point_3, CGAL::Epick::Vector_3>;
@@ -44,3 +46,5 @@ public:
 
   explicit model_constructor(methods method, additional_options options = all);
 };
+
+} // namespace sc
