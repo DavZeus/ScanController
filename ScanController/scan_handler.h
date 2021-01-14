@@ -18,10 +18,9 @@ class scan_handler {
   constexpr static int char_size = 8;
   constexpr static unsigned restart_delay = 5;
 
-  constexpr static std::array result_file = std::to_array("full_result.txt");
-  constexpr static std::array scan_file = std::to_array("afdata1.txt");
-  constexpr static std::array scanner_path =
-      std::to_array("scanner\\PMEXE.exe");
+  constexpr static std::string_view data_points_file{"data_points.txt"};
+  constexpr static std::string_view scan_file{"afdata1.txt"};
+  constexpr static std::string_view scanner_path{"scanner\\PMEXE.exe"};
 
   [[noreturn]] static auto win_error() -> void;
 

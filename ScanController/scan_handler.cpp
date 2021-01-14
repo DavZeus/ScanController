@@ -50,7 +50,7 @@ auto sc::scan_handler::check_board_response(boost::asio::serial_port &port)
 auto sc::scan_handler::make_scan() -> void {
   STARTUPINFOA si{};
   PROCESS_INFORMATION pi{};
-  std::string sc_path = scanner_path.data();
+  std::string sc_path{scanner_path.data()};
   // ZeroMemory(&si, sizeof si);
   si.cb = sizeof si;
   // ZeroMemory(&pi, sizeof pi);
@@ -77,8 +77,8 @@ auto sc::scan_handler::make_scan() -> void {
 }
 
 auto sc::scan_handler::remove_scan_file() -> void {
-  if (std::filesystem::exists(scan_file.data())) {
-    std::filesystem::remove(scan_file.data());
+  if (std::filesystem::exists(scan_file)) {
+    std::filesystem::remove(scan_file);
   }
 }
 
@@ -86,7 +86,7 @@ auto sc::scan_handler::process_scan_file() -> vertical {
   vertical points;
 
   // Open scan file
-  std::ifstream in_file(scan_file.data(), std::ios::in);
+  std::ifstream in_file(scan_file, std::ios::in);
   if (!in_file) {
     throw std::exception("There is no scan file!");
   }

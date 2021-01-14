@@ -10,6 +10,18 @@ auto sc::options::parse(int argc, char *argv[]) -> void {
   store(parse_command_line(argc, argv, desc), vm_);
   notify(vm_);
 }
+
+auto sc::options::check_value(const std::string_view& key) const -> size_t
+{
+  return vm_.count(key.data());
+}
+
+auto sc::options::get_value(const std::string_view& key) const -> boost::program_options::variable_value
+{
+  return vm_.at(key.data());
+}
+
+
 sc::options::options() : description_("Allowed program options") {
   description_.add_options()(help_switch.data(), help_desc.data())(
       com_switch.data(),
