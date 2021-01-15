@@ -14,12 +14,17 @@ int main(int argc, char *argv[]) {
       fmt::print("{}\n", options.get_allowed_options());
       return 0;
     }
+    if (!options.check_value(sc::options::distance_switch)) {
+      throw std::exception("Distance to camera is not specified");
+    }
+    const auto dist = options.get_value(sc::options::distance_switch).as<float>(); 
     const auto com =
-        "COM" + std::to_string(
-                    options.get_value(sc::options::com_switch).as<short>());
+        "COM" +
+        std::to_string(options.get_value(sc::options::com_switch).as<short>());
     sc::scan_handler scanner(com);
     auto points = scanner.start();
-    const sc::dimension_converter converter(380.F, 1460.F);
+    const auto cut = options.get_value(sc::options::cut_switch).as<float>();
+    const sc::dimension_converter converter(dist, cut);
     auto p = converter.convert(std::move(points));
     const sc::model_constructor constructor(
         sc::model_constructor::methods::advancing_front);
