@@ -1,15 +1,10 @@
 ﻿#pragma once
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Point_set_3.h>
-#include <CGAL/Surface_mesh.h>
+#include "common_usings.h"
 
 namespace sc {
 
 class model_constructor {
-  using point_set =
-      CGAL::Point_set_3<CGAL::Epick::Point_3, CGAL::Epick::Vector_3>;
-  using surface_mesh = CGAL::Surface_mesh<CGAL::Epick::Point_3>;
 
 public:
   enum class methods : int8_t { advancing_front, scale_space, poisson };

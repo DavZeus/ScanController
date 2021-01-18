@@ -1,6 +1,7 @@
 #pragma once
 
 #include "boost_winver.h"
+#include "common_usings.h"
 
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio/streambuf.hpp>
@@ -10,8 +11,6 @@
 namespace sc {
 
 class scan_handler {
-  using vertical = std::vector<std::pair<float, float>>;
-
   constexpr static int min_step = 1;
   constexpr static int step_count = 200;
   constexpr static int baud_rate = 9600;
@@ -39,7 +38,7 @@ class scan_handler {
 
 public:
   explicit scan_handler(std::string com_port);
-  [[nodiscard]] auto start() -> std::vector<vertical>;
+  [[nodiscard]] auto start() -> data_points;
 };
 
 template <class T>
@@ -48,7 +47,7 @@ auto scan_handler::send_to_board(boost::asio::serial_port &port, T &message)
   // Output buffer
   boost::asio::streambuf o_buf;
 
-  // Stream to write message
+  // Stream to write_mesh message
   std::ostream os(&o_buf);
 
   // Write message to buffer

@@ -6,8 +6,8 @@ sc::dimension_converter::dimension_converter(const float camera_distance,
                                              const float cut_level)
     : camera_distance_(camera_distance), cut_level_(cut_level) {}
 
-auto sc::dimension_converter::convert(std::vector<vertical> &&verticals) const
-    -> point_set {
+auto sc::dimension_converter::convert(data_points&& verticals) const
+-> point_set {
   point_set point_set;
   const auto cathetus = camera_distance_ / std::numbers::sqrt2_v<float>;
   auto angle_multiplier = 0U;

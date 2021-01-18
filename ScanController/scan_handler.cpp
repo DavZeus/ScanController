@@ -109,8 +109,9 @@ auto sc::scan_handler::process_scan_file() -> vertical {
 sc::scan_handler::scan_handler(std::string com_port)
     : com_port_(std::move(com_port)) {}
 
-auto sc::scan_handler::start() -> std::vector<vertical> {
-  std::vector<vertical> verticals;
+auto sc::scan_handler::start() -> data_points
+{
+  data_points verticals;
 
   // Print status
   fmt::print("Program starting...\n");

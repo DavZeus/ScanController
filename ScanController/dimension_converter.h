@@ -1,16 +1,11 @@
 #pragma once
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Point_set_3.h>
-#include <vector>
+#include "common_usings.h"
 
 namespace sc {
 
 class dimension_converter {
-  using point_set =
-      CGAL::Point_set_3<CGAL::Epick::Point_3, CGAL::Epick::Vector_3>;
-  using vertical = std::vector<std::pair<float, float>>;
-
+  
   constexpr static float min_angle = 1.8F;                  // degrees
   constexpr static float pixel_size = 1.67F;                // micrometers
   constexpr static float straight_angle = 180.F;            // degrees
@@ -27,8 +22,8 @@ class dimension_converter {
 
 public:
   explicit dimension_converter(float camera_distance, float cut_level = 0.F);
-  [[nodiscard]] auto convert(std::vector<vertical> &&verticals) const
-      -> point_set;
+  [[nodiscard]] auto convert(data_points&& verticals) const
+  -> point_set;
 };
 
 } // namespace sc

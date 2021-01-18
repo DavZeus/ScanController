@@ -181,14 +181,15 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
   <ItemGroup>
     <ClCompile Include="dimension_converter.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mesh_writer.cpp" />
+    <ClCompile Include="file_writer.cpp" />
     <ClCompile Include="model_constructor.cpp" />
     <ClCompile Include="options.cpp" />
     <ClCompile Include="scan_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common_usings.h" />
     <ClInclude Include="dimension_converter.h" />
-    <ClInclude Include="mesh_writer.h" />
+    <ClInclude Include="file_writer.h" />
     <ClInclude Include="model_constructor.h" />
     <ClInclude Include="options.h" />
     <ClInclude Include="scan_handler.h" />

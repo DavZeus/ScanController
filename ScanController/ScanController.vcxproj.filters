@@ -27,10 +27,10 @@
     <ClCompile Include="model_constructor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mesh_writer.cpp">
+    <ClCompile Include="options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="options.cpp">
+    <ClCompile Include="file_writer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,13 +44,16 @@
     <ClInclude Include="model_constructor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mesh_writer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="boost_winver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="file_writer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_usings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
