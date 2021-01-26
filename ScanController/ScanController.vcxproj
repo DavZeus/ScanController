@@ -184,6 +184,7 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
     <ClCompile Include="io_operations.cpp" />
     <ClCompile Include="model_constructor.cpp" />
     <ClCompile Include="options.cpp" />
+    <ClCompile Include="runner.cpp" />
     <ClCompile Include="scan_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +193,7 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
     <ClInclude Include="io_operations.h" />
     <ClInclude Include="model_constructor.h" />
     <ClInclude Include="options.h" />
+    <ClInclude Include="runner.h" />
     <ClInclude Include="scan_handler.h" />
     <ClInclude Include="boost_winver.h" />
   </ItemGroup>
