@@ -1,6 +1,5 @@
 #pragma once
 
-// ReSharper disable once CppUnusedIncludeDirective
 #include "boost_winver.h"
 
 #include <boost/program_options.hpp>
@@ -24,20 +23,19 @@ public:
   auto get_allowed_options() const
       -> const boost::program_options::options_description &;
   auto parse(int argc, char *argv[]) -> void;
-  [[nodiscard]] auto check_value(const std::string_view &key) const
-      -> size_t;
+  [[nodiscard]] auto check_value(const std::string_view &key) const -> size_t;
   [[nodiscard]] auto get_value(const std::string_view &key) const
       -> boost::program_options::variable_value;
   options();
 };
 
-//template <size_t N>
-//auto options::check_value(const std::array<char, N> &key) const -> size_t {
+// template <size_t N>
+// auto options::check_value(const std::array<char, N> &key) const -> size_t {
 //  return vm_.count(key.data());
 //}
 //
-//template <size_t N>
-//auto options::get_value(const std::array<char, N> &key) const
+// template <size_t N>
+// auto options::get_value(const std::array<char, N> &key) const
 //    -> boost::program_options::variable_value {
 //  return vm_.at(key.data());
 //}
