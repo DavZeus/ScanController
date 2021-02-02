@@ -21,23 +21,34 @@ class scan_handler {
   constexpr static std::string_view scan_file{"afdata1.txt"};
   constexpr static std::string_view scanner_path{"scanner\\PMEXE.exe"};
 
+  // Form error string by winapi and throw it
   [[noreturn]] static auto win_error() -> void;
 
+  // Set parameters of serial port
   static auto set_serial_parameters(boost::asio::serial_port &port) -> void;
 
+  // Send message via serial port
   template <class T>
   static auto send_to_board(boost::asio::serial_port &port, T &message) -> void;
 
+  // Check if response acquired via serial port
   static auto check_board_response(boost::asio::serial_port &port) -> bool;
 
+  // Perform scan
   static auto make_scan() -> void;
+
+  // Delete scan file
   static auto remove_scan_file() -> void;
+  // Read scan file
   [[nodiscard]] static auto process_scan_file() -> vertical;
 
+  // Chosen serial port
   std::string com_port_;
 
 public:
   explicit scan_handler(std::string com_port);
+
+  // Performs model scanning
   [[nodiscard]] auto start() -> data_points;
 };
 

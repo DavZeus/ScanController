@@ -1,6 +1,6 @@
 #pragma once
 
-// For WINNT instead WINDOWS for ASIO support
+// Macro for Boost ASIO versioning
 #ifdef _WIN64
 
 #ifndef _WIN32_WINNT
@@ -8,4 +8,3 @@
 #endif
 
 #endif
-
