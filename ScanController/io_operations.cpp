@@ -12,20 +12,21 @@
 #include <iomanip>
 #include <sstream>
 
-auto sc::io_operations::write_mesh(std::string path, const surface_mesh &mesh)
-    -> void {
+auto sc::io::write_mesh(std::string path, const surface_mesh &mesh) -> void {
   std::ofstream file(path);
   CGAL::write_STL(mesh, file);
   // Write content to file
   file.flush();
 }
 
-auto sc::io_operations::write_data_points(const data_points &points, std::string filename) -> bool {
+auto sc::io::write_data_points(const data_points &points, std::string filename)
+    -> bool {
   if (filename.empty()) {
     std::stringstream time_parse(filename);
     auto time =
         std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    time_parse << "x-z-" << std::put_time(std::localtime(&time), "%FT%T") << ".txt";
+    time_parse << "x-z-" << std::put_time(std::localtime(&time), "%FT%T")
+               << ".txt";
   }
   std::ofstream outfile(filename);
   outfile << "x-z" << std::flush;
@@ -41,8 +42,7 @@ auto sc::io_operations::write_data_points(const data_points &points, std::string
   return true;
 }
 
-auto sc::io_operations::read_data_points(const std::string &filename)
-    -> data_points {
+auto sc::io::read_data_points(const std::string &filename) -> data_points {
   data_points points;
   if (!std::filesystem::exists(filename)) {
     throw std::exception("There is no such data file");
