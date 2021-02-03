@@ -16,7 +16,11 @@ class options {
   constexpr static std::string_view help_desc{"produce help message"};
   constexpr static std::string_view com_desc{"COM port number"};
   constexpr static std::string_view distance_desc{"camera distance"};
-  constexpr static std::string_view cut_desc{"model cut level in pixels"};
+  constexpr static std::string_view cut_desc{
+      "model bottom cut level in pixels"};
+  constexpr static std::string_view save_desc{"save point data in file"};
+  constexpr static std::string_view load_desc{
+      "use file with point data (one file)"};
 
 public:
   // Program option switches
@@ -24,6 +28,8 @@ public:
   constexpr static std::string_view com_switch{"com"};
   constexpr static std::string_view distance_switch{"dist"};
   constexpr static std::string_view cut_switch{"cut"};
+  constexpr static std::string_view save_switch{"save"};
+  constexpr static std::string_view load_switch{"load"};
 
   // Get program options description (for console output mainly)
   auto get_allowed_options() const

@@ -11,16 +11,14 @@ auto sc::options::parse(int argc, char *argv[]) -> void {
   notify(vm_);
 }
 
-auto sc::options::check_value(const std::string_view& key) const -> size_t
-{
+auto sc::options::check_value(const std::string_view &key) const -> size_t {
   return vm_.count(key.data());
 }
 
-auto sc::options::get_value(const std::string_view& key) const -> boost::program_options::variable_value
-{
+auto sc::options::get_value(const std::string_view &key) const
+    -> boost::program_options::variable_value {
   return vm_.at(key.data());
 }
-
 
 sc::options::options() : description_("Allowed program options") {
   description_.add_options()(help_switch.data(), help_desc.data())(
@@ -32,5 +30,7 @@ sc::options::options() : description_("Allowed program options") {
                        distance_desc.data())(
       cut_switch.data(),
       boost::program_options::value<float>()->default_value(0.F),
-      cut_desc.data());
+      cut_desc.data())(save_switch.data(), save_desc.data())(
+      load_switch.data(), boost::program_options::value<std::string>(),
+      load_desc.data());
 }
