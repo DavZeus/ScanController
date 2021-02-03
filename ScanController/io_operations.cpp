@@ -15,7 +15,7 @@
 auto sc::io::write_mesh(std::string path, const surface_mesh &mesh) -> void {
   std::ofstream file(path);
   CGAL::write_STL(mesh, file);
-  // Write content to file
+  // Force write content to file
   file.flush();
 }
 
