@@ -6,6 +6,8 @@ namespace sc {
 
 namespace io {
 
+// Get current time as string
+auto generate_time_string() -> std::string;
 // Write mesh to stl file
 auto write_mesh(std::string path, const surface_mesh &mesh) -> void;
 // Write data camera point data

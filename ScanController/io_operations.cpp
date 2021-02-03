@@ -12,6 +12,15 @@
 #include <iomanip>
 #include <sstream>
 
+auto sc::io::generate_time_string() -> std::string {
+  std::string time_string;
+  std::stringstream time_parse(time_string);
+  auto time =
+      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  time_parse << std::put_time(std::localtime(&time), "%FT%T");
+  return time_string;
+}
+
 auto sc::io::write_mesh(std::string path, const surface_mesh &mesh) -> void {
   std::ofstream file(path);
   CGAL::write_STL(mesh, file);
@@ -22,11 +31,9 @@ auto sc::io::write_mesh(std::string path, const surface_mesh &mesh) -> void {
 auto sc::io::write_data_points(const data_points &points, std::string filename)
     -> bool {
   if (filename.empty()) {
-    std::stringstream time_parse(filename);
-    auto time =
-        std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    time_parse << "x-z-" << std::put_time(std::localtime(&time), "%FT%T")
-               << ".txt";
+    filename = generate_time_string() + ".txt";
+  } else {
+    filename += ".txt";
   }
   std::ofstream outfile(filename);
   outfile << "x-z" << std::flush;
