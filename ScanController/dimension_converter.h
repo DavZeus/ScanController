@@ -6,8 +6,8 @@ namespace sc {
 
 class dimension_converter {
   // Camera parameters
-  constexpr static float min_angle = 1.8F;                  // degrees
   constexpr static float pixel_size = 1.67F;                // micrometers
+  constexpr static float full_angle = 360.F;                // degrees
   constexpr static float straight_angle = 180.F;            // degrees
   constexpr static float focus_length = 16.F;               // millimeters
   constexpr static float camera_width_resolution = 3840.F;  // pixels
