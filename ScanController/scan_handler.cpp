@@ -93,6 +93,9 @@ auto sc::scan_handler::process_scan_file() -> vertical {
     static float p_x;
     static float p_z;
     in_file >> p_x >> p_z;
+    if (p_z < cut_level_) {
+      continue;
+    }
     points.emplace_back(p_x, p_z);
   }
 
@@ -104,8 +107,10 @@ auto sc::scan_handler::process_scan_file() -> vertical {
   return points;
 }
 
-sc::scan_handler::scan_handler(std::string com_port, unsigned int step_count)
-    : com_port_(std::move(com_port)), step_count_(step_count) {}
+sc::scan_handler::scan_handler(std::string com_port, float cut_level,
+                               unsigned int step_count)
+    : com_port_(std::move(com_port)), step_count_(step_count),
+      cut_level_(cut_level) {}
 
 auto sc::scan_handler::start() -> data_points {
   data_points verticals;

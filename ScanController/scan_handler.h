@@ -39,15 +39,18 @@ class scan_handler {
   // Delete scan file
   static auto remove_scan_file() -> void;
   // Read scan file
-  [[nodiscard]] static auto process_scan_file() -> vertical;
+  [[nodiscard]] auto process_scan_file() -> vertical;
 
   // Chosen serial port
   const std::string com_port_;
   // Number of drive steps
   const unsigned int step_count_;
+  // Bottom points cut level (pixels)
+  const float cut_level_;
 
 public:
-  explicit scan_handler(std::string com_port, unsigned int step_count = 200);
+  explicit scan_handler(std::string com_port, float cut_level = 0,
+                        unsigned int step_count = 200);
 
   // Performs model scanning
   [[nodiscard]] auto start() -> data_points;

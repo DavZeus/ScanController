@@ -2,9 +2,8 @@
 
 #include <numbers>
 
-sc::dimension_converter::dimension_converter(const float camera_distance,
-                                             const float cut_level)
-    : camera_distance_(camera_distance), cut_level_(cut_level) {}
+sc::dimension_converter::dimension_converter(const float camera_distance)
+    : camera_distance_(camera_distance) {}
 
 auto sc::dimension_converter::convert(data_points &&verticals) const
     -> point_set {
@@ -17,9 +16,6 @@ auto sc::dimension_converter::convert(data_points &&verticals) const
     const auto cos_rad = std::cos(rad);
     const auto sin_rad = std::sin(rad);
     for (const auto &point : vertical) {
-      if (point.second < cut_level_) {
-        continue;
-      }
       const auto hx = (point.first - half_camera_height) * pixel_size / 1000.F;
       const auto p_x = camera_distance_ +
                        (camera_distance_ - focus_length) * hx / focus_length;

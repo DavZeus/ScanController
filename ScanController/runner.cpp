@@ -10,7 +10,8 @@ auto sc::runner::do_scan_branch() -> data_points {
   const auto com =
       "COM" +
       std::to_string(options_.get_value(options::com_switch).as<short>());
-  scan_handler scanner(com);
+  const auto cut_level = options_.get_value(options::cut_switch).as<float>();
+  scan_handler scanner(com, cut_level);
   return scanner.start();
 }
 
@@ -43,10 +44,9 @@ auto sc::runner::start(int argc, char *argv[]) -> int {
         !options_.check_value(options::load_switch)) {
       io::write_data_points(d_points);
     }
-    const auto cut_level = options_.get_value(options::cut_switch).as<float>();
     const auto camera_distance =
         options_.get_value(options::distance_switch).as<float>();
-    const dimension_converter converter(camera_distance, cut_level);
+    const dimension_converter converter(camera_distance);
     const auto points = converter.convert(std::move(d_points));
     const model_constructor constructor(
         model_constructor::methods::advancing_front);

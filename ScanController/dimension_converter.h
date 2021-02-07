@@ -17,11 +17,11 @@ class dimension_converter {
   constexpr static float half_camera_height =
       camera_height_resolution / 2.F; // pixels
 
-  float camera_distance_; // millimeters
-  float cut_level_;       // pixels
+  // Distance from camera to axis of rotation (millimeters)
+  float camera_distance_;
 
 public:
-  explicit dimension_converter(float camera_distance, float cut_level = 0.F);
+  explicit dimension_converter(float camera_distance);
   // Performs converting of data from scanner to point cloud
   [[nodiscard]] auto convert(data_points &&verticals) const -> point_set;
 };
