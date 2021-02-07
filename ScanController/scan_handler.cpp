@@ -51,9 +51,7 @@ auto sc::scan_handler::make_scan() -> void {
   STARTUPINFOA si{};
   PROCESS_INFORMATION pi{};
   std::string sc_path{scanner_path.data()};
-  // ZeroMemory(&si, sizeof si);
   si.cb = sizeof si;
-  // ZeroMemory(&pi, sizeof pi);
   if (!CreateProcessA(nullptr, sc_path.data(), nullptr, nullptr, FALSE, 0,
                       nullptr, nullptr, &si, &pi)) {
     win_error();
@@ -106,11 +104,10 @@ auto sc::scan_handler::process_scan_file() -> vertical {
   return points;
 }
 
-sc::scan_handler::scan_handler(std::string com_port)
-    : com_port_(std::move(com_port)) {}
+sc::scan_handler::scan_handler(std::string com_port, unsigned int step_count)
+    : com_port_(std::move(com_port)), step_count_(step_count) {}
 
-auto sc::scan_handler::start() -> data_points
-{
+auto sc::scan_handler::start() -> data_points {
   data_points verticals;
 
   // Print status
@@ -131,7 +128,7 @@ auto sc::scan_handler::start() -> data_points
   fmt::print("Sending settings...\n");
 
   // Send one turn step count to arduino
-  send_to_board(port, step_count);
+  send_to_board(port, step_count_);
 
   // Remove old scan_file
   remove_scan_file();
@@ -145,12 +142,12 @@ auto sc::scan_handler::start() -> data_points
   fmt::print("Scanning starts now.\n");
 
   // Set step count left
-  auto steps_left = step_count;
+  auto steps_left = step_count_;
 
   // Scan loop
   while (steps_left--) {
     // Print status
-    fmt::print("\rStep {} of {}", step_count - steps_left, step_count);
+    fmt::print("\rStep {} of {}", step_count_ - steps_left, step_count_);
     uint8_t repeat = 0;
     while (true) {
       try {
