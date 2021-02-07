@@ -39,7 +39,7 @@ class scan_handler {
   // Delete scan file
   static auto remove_scan_file() -> void;
   // Read scan file
-  [[nodiscard]] auto process_scan_file() -> vertical;
+  [[nodiscard]] auto process_scan_file() const -> vertical;
 
   // Chosen serial port
   const std::string com_port_;

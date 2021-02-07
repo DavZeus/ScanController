@@ -80,7 +80,7 @@ auto sc::scan_handler::remove_scan_file() -> void {
   }
 }
 
-auto sc::scan_handler::process_scan_file() -> vertical {
+auto sc::scan_handler::process_scan_file() const -> vertical {
   vertical points;
 
   // Open scan file
