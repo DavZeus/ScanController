@@ -15,6 +15,8 @@ class options {
   // Program options description
   constexpr static std::string_view help_desc{"produce help message"};
   constexpr static std::string_view com_desc{"COM port number"};
+  constexpr static std::string_view steps_desc{
+      "number of steps required for one revolution of drive"};
   constexpr static std::string_view distance_desc{"camera distance"};
   constexpr static std::string_view cut_desc{
       "model bottom cut level in pixels"};
@@ -26,6 +28,7 @@ public:
   // Program option switches
   constexpr static std::string_view help_switch{"help"};
   constexpr static std::string_view com_switch{"com"};
+  constexpr static std::string_view steps_switch{"steps"};
   constexpr static std::string_view distance_switch{"dist"};
   constexpr static std::string_view cut_switch{"cut"};
   constexpr static std::string_view save_switch{"save"};

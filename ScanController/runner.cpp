@@ -11,7 +11,9 @@ auto sc::runner::do_scan_branch() -> data_points {
       "COM" +
       std::to_string(options_.get_value(options::com_switch).as<short>());
   const auto cut_level = options_.get_value(options::cut_switch).as<float>();
-  scan_handler scanner(com, cut_level);
+  const auto step_count =
+      options_.get_value(options::steps_switch).as<unsigned>();
+  scan_handler scanner(com, cut_level, step_count);
   return scanner.start();
 }
 

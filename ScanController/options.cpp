@@ -25,9 +25,12 @@ sc::options::options() : description_("Allowed program options") {
       com_switch.data(),
       boost::program_options::value<short>()->default_value(
           static_cast<short>(4)),
-      com_desc.data())(distance_switch.data(),
-                       boost::program_options::value<float>(),
-                       distance_desc.data())(
+      com_desc.data())(
+      steps_switch.data(),
+      boost::program_options::value<unsigned>()->default_value(200U),
+      steps_desc.data())(distance_switch.data(),
+                         boost::program_options::value<float>(),
+                         distance_desc.data())(
       cut_switch.data(),
       boost::program_options::value<float>()->default_value(0.F),
       cut_desc.data())(save_switch.data(), save_desc.data())(
