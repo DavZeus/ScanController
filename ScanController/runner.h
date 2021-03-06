@@ -1,11 +1,11 @@
 #pragma once
 
-#include "options.h"
+#include "program_arguments.h"
 #include "scan_handler.h"
 
 namespace sc {
 class runner {
-  options options_{};
+  program_arguments options_{};
 
   auto do_scan_branch() -> data_points;
   auto do_data_load_branch() -> data_points;

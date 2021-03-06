@@ -18,7 +18,7 @@ public:
   // TODO: I do not know how to make this enum better because I can not overload
   // operators of nested enum class
 
-  // Pre-reconstruction point cloud modification options
+  // Pre-reconstruction point cloud modification program_arguments
   enum additional_options : unsigned {
     remove_outliers = 1,
     simplification = remove_outliers * 2,
@@ -27,7 +27,7 @@ public:
   };
 
 private:
-  // Chosen options
+  // Chosen program_arguments
   additional_options options_;
 
   // Remove outliers from point cloud
@@ -48,7 +48,7 @@ private:
 
 public:
   // Reconstruct model from point cloud acquired from camera
-  auto make_mesh(point_set points) const -> surface_mesh;
+  [[nodiscard]] auto make_mesh(point_set points) const -> surface_mesh;
 
   explicit model_constructor(methods method, additional_options options = all);
 };
