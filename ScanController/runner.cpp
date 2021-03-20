@@ -6,18 +6,20 @@
 
 #include <fmt/ostream.h>
 
-auto sc::runner::do_scan_branch() -> data_points {
+auto sc::runner::do_scan_branch() const -> data_points {
   const auto com =
       "COM" +
-      std::to_string(options_.get_value(program_arguments::com_switch).as<short>());
-  const auto cut_level = options_.get_value(program_arguments::cut_switch).as<float>();
+      std::to_string(
+          options_.get_value(program_arguments::com_switch).as<short>());
+  const auto cut_level =
+      options_.get_value(program_arguments::cut_switch).as<float>();
   const auto step_count =
       options_.get_value(program_arguments::steps_switch).as<unsigned>();
   scan_handler scanner(com, cut_level, step_count);
   return scanner.start();
 }
 
-auto sc::runner::do_data_load_branch() -> data_points {
+auto sc::runner::do_data_load_branch() const -> data_points {
   if (options_.check_value(program_arguments::load_switch) > 1) {
     throw std::exception("Only one file can be passed");
   }
