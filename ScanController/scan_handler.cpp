@@ -1,25 +1,6 @@
 #include "scan_handler.h"
 
-#include <boost/asio/io_service.hpp>
 #include <boost/asio/read.hpp>
-#include <filesystem>
-#include <fmt/format.h>
-#include <fstream>
-#include <shellapi.h>
-#include <utility>
-
-auto sc::scan_handler::win_error() -> void {
-  const auto error_message_id = GetLastError();
-  LPSTR message_buffer = nullptr;
-  const size_t size = FormatMessageA(
-      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-          FORMAT_MESSAGE_IGNORE_INSERTS,
-      nullptr, error_message_id, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-      LPSTR(&message_buffer), 0, nullptr);
-  const std::string error(message_buffer, size);
-  LocalFree(message_buffer);
-  throw std::exception(error.c_str());
-}
 
 auto sc::scan_handler::set_serial_parameters(boost::asio::serial_port &port)
     -> void {
@@ -35,155 +16,17 @@ auto sc::scan_handler::set_serial_parameters(boost::asio::serial_port &port)
 }
 
 auto sc::scan_handler::check_board_response(boost::asio::serial_port &port)
-    -> bool {
-  // Input buffer / Response
+    -> void {
+  // Input/response buffer
   boost::asio::streambuf i_buf;
 
   if (read(port, i_buf.prepare(sizeof(uint8_t))) == 0) {
-    return false;
+    throw std::exception("No arduino response");
   }
   i_buf.consume(sizeof(uint8_t));
-
-  return true;
-}
-
-auto sc::scan_handler::make_scan() -> void {
-  STARTUPINFOA si{};
-  PROCESS_INFORMATION pi{};
-  std::string sc_path{scanner_path.data()};
-  si.cb = sizeof si;
-  if (!CreateProcessA(nullptr, sc_path.data(), nullptr, nullptr, FALSE, 0,
-                      nullptr, nullptr, &si, &pi)) {
-    win_error();
-  }
-  if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {
-    win_error();
-  }
-  // TODO: Add security policies to be able to get exit code
-  /*DWORD code;
-  if (!GetExitCodeProcess(pi.hProcess, &code))
-  {
-                  win_error();
-  }
-  if (code != 0)
-  {
-                  throw std::exception(fmt::format("Scanner exit code is {}\n",
-  code).c_str());
-  }*/
-  CloseHandle(pi.hProcess);
-  CloseHandle(pi.hThread);
-}
-
-auto sc::scan_handler::remove_scan_file() -> void {
-  if (std::filesystem::exists(scan_file)) {
-    std::filesystem::remove(scan_file);
-  }
-}
-
-auto sc::scan_handler::process_scan_file() const -> vertical {
-  vertical points;
-
-  // Open scan file
-  std::ifstream in_file(scan_file, std::ios::in);
-  if (!in_file) {
-    throw std::exception("There is no scan file!");
-  }
-
-  while (!in_file.eof()) {
-    static float p_x;
-    static float p_z;
-    in_file >> p_x >> p_z;
-    if (p_z < cut_level_) {
-      continue;
-    }
-    points.emplace_back(p_x, p_z);
-  }
-
-  in_file.close();
-
-  // Remove scan file
-  remove_scan_file();
-
-  return points;
 }
 
 sc::scan_handler::scan_handler(std::string com_port, float cut_level,
                                unsigned int step_count)
     : com_port_(std::move(com_port)), step_count_(step_count),
       cut_level_(cut_level) {}
-
-auto sc::scan_handler::start() -> data_points {
-  data_points verticals;
-
-  // Print status
-  fmt::print("Program starting...\n");
-
-  // Initialize serial port
-  boost::asio::io_service io_service;
-  boost::asio::serial_port port(io_service, com_port_);
-  set_serial_parameters(port);
-
-  // Print status
-  fmt::print("Connecting to arduino board via {}...\n", com_port_);
-
-  // Wait arduino restart
-  std::this_thread::sleep_for(std::chrono::seconds(restart_delay));
-
-  // Print status
-  fmt::print("Sending settings...\n");
-
-  // Send one turn step count to arduino
-  send_to_board(port, step_count_);
-
-  // Remove old scan_file
-  remove_scan_file();
-
-  // Check board response
-  if (!check_board_response(port)) {
-    throw std::exception("No arduino response");
-  }
-
-  // Print status
-  fmt::print("Scanning starts now.\n");
-
-  // Set step count left
-  auto steps_left = step_count_;
-
-  // Scan loop
-  while (steps_left--) {
-    // Print status
-    fmt::print("\rStep {} of {}", step_count_ - steps_left, step_count_);
-    uint8_t repeat = 0;
-    while (true) {
-      try {
-
-        make_scan();
-
-        verticals.emplace_back(process_scan_file());
-
-        break;
-      } catch (...) {
-        if (repeat == 10) {
-          throw;
-        }
-        ++repeat;
-      }
-    }
-    // Send signal to make step
-    send_to_board(port, min_step);
-
-    // Check board response
-    if (!check_board_response(port)) {
-      throw std::exception("No arduino response");
-    }
-  }
-
-  fmt::print("\n");
-
-  // Close serial port
-  if (port.is_open()) {
-    port.close();
-  }
-
-  return verticals;
-}

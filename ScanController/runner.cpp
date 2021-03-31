@@ -1,12 +1,12 @@
 #include "runner.h"
 
-#include "dimension_converter.h"
+#include "dimension_converter.hpp"
 #include "io_operations.h"
 #include "model_constructor.h"
 
 #include <fmt/ostream.h>
 
-auto sc::runner::do_scan_branch() const -> data_points {
+auto sc::runner::do_scan_branch() const -> model_profiles<float> {
   const auto com =
       "COM" +
       std::to_string(
@@ -16,17 +16,17 @@ auto sc::runner::do_scan_branch() const -> data_points {
   const auto step_count =
       options_.get_value(program_arguments::steps_switch).as<unsigned>();
   scan_handler scanner(com, cut_level, step_count);
-  return scanner.start();
+  return scanner.start<float>();
 }
 
-auto sc::runner::do_data_load_branch() const -> data_points {
-  if (options_.check_value(program_arguments::load_switch) > 1) {
-    throw std::exception("Only one file can be passed");
-  }
-  const std::string file =
-      options_.get_value(program_arguments::load_switch).as<std::string>();
-  return io::read_data_points(file);
-}
+// auto sc::runner::do_data_load_branch() const -> model_profiles {
+//  if (options_.check_value(program_arguments::load_switch) > 1) {
+//    throw std::exception("Only one file can be passed");
+//  }
+//  const std::string file =
+//      options_.get_value(program_arguments::load_switch).as<std::string>();
+//  return io::read_data_points(file);
+//}
 
 auto sc::runner::start(int argc, char *argv[]) -> int {
   try {
@@ -38,16 +38,16 @@ auto sc::runner::start(int argc, char *argv[]) -> int {
     if (!options_.check_value(program_arguments::distance_switch)) {
       throw std::exception("Distance to camera is not specified");
     }
-    data_points d_points;
-    if (options_.check_value(program_arguments::load_switch)) {
+    auto d_points = do_scan_branch();
+    /*if (options_.check_value(program_arguments::load_switch)) {
       d_points = do_data_load_branch();
     } else {
       d_points = do_scan_branch();
-    }
-    if (options_.check_value(program_arguments::save_switch) &&
+    }*/
+    /*if (options_.check_value(program_arguments::save_switch) &&
         !options_.check_value(program_arguments::load_switch)) {
       io::write_data_points(d_points);
-    }
+    }*/
     const auto camera_distance =
         options_.get_value(program_arguments::distance_switch).as<float>();
     const dimension_converter converter(camera_distance);

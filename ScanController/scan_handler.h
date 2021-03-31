@@ -1,27 +1,25 @@
 #pragma once
 
-#include "boost_winver.h"
+#include "windefs.h"
+
 #include "common_usings.h"
 
+#include "camera_handler.h"
+
+#include <boost/asio/io_service.hpp>
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio/streambuf.hpp>
 #include <boost/asio/write.hpp>
+#include <fmt/core.h>
 #include <string>
 
 namespace sc {
 
 class scan_handler {
-  constexpr static int min_step = 1;
-  constexpr static int baud_rate = 9600;
-  constexpr static int char_size = 8;
-  constexpr static unsigned restart_delay = 5;
-
-  constexpr static std::string_view data_points_file{"data_points.txt"};
-  constexpr static std::string_view scan_file{"afdata1.txt"};
-  constexpr static std::string_view scanner_path{"scanner\\PMEXE.exe"};
-
-  // Form error string by winapi and throw it
-  [[noreturn]] static auto win_error() -> void;
+  inline constexpr static int min_step = 1;
+  inline constexpr static int baud_rate = 9600;
+  inline constexpr static int char_size = 8;
+  inline constexpr static unsigned restart_delay = 5;
 
   // Set parameters of serial port
   static auto set_serial_parameters(boost::asio::serial_port &port) -> void;
@@ -31,15 +29,7 @@ class scan_handler {
   static auto send_to_board(boost::asio::serial_port &port, T &message) -> void;
 
   // Check if response acquired via serial port
-  static auto check_board_response(boost::asio::serial_port &port) -> bool;
-
-  // Perform scan
-  static auto make_scan() -> void;
-
-  // Delete scan file
-  static auto remove_scan_file() -> void;
-  // Read scan file
-  [[nodiscard]] auto process_scan_file() const -> vertical;
+  static auto check_board_response(boost::asio::serial_port &port) -> void;
 
   // Chosen serial port
   const std::string com_port_;
@@ -47,13 +37,19 @@ class scan_handler {
   const unsigned int step_count_;
   // Bottom points cut level (pixels)
   const float cut_level_;
+  //
+  camera_handler camera_;
+
+  template <std::floating_point T>
+  [[nodiscard]] auto make_scan() -> profile_pair<T>;
 
 public:
   explicit scan_handler(std::string com_port, float cut_level = 0,
                         unsigned int step_count = 200);
 
   // Performs model scanning
-  [[nodiscard]] auto start() -> data_points;
+  template <std::floating_point T>
+  [[nodiscard]] auto start() -> model_profiles<T>;
 };
 
 template <class T>
@@ -72,4 +68,77 @@ auto scan_handler::send_to_board(boost::asio::serial_port &port, T &message)
   write(port, o_buf.data());
 }
 
+template <std::floating_point T>
+auto scan_handler::make_scan() -> profile_pair<T> {
+  auto result = camera_.get_current_profiles<T>();
+  if (cut_level_ != 0) {
+    for (auto &part : result) {
+      auto it = std::find_if(
+          part.begin(), part.end(),
+          [this](const data_point<T> &i) { return cut_level_ > i.x; });
+      part.erase(it, part.end());
+    }
+  }
+  return result;
+}
+
+template <std::floating_point T>
+auto scan_handler::start() -> model_profiles<T> {
+  model_profiles<T> m_profiles;
+  m_profiles.reserve(step_count_);
+
+  // Print status
+  fmt::print("Program starting...\n");
+
+  // Initialize serial port
+  boost::asio::io_service io_service;
+  boost::asio::serial_port port(io_service, com_port_);
+  set_serial_parameters(port);
+
+  // Print status
+  fmt::print("Connecting to arduino board via {}...\n", com_port_);
+
+  // Wait arduino restart after COM connection
+  std::this_thread::sleep_for(std::chrono::seconds(restart_delay));
+
+  // Print status
+  fmt::print("Sending settings...\n");
+
+  // Send one turn step count to arduino
+  send_to_board(port, step_count_);
+  // Check board response
+  check_board_response(port);
+
+  // Print status
+  fmt::print("Scanning starts now.\n");
+
+  // Init camera connection and settings
+  camera_.initialize();
+
+  // Set number of steps left
+  auto steps_left = step_count_;
+
+  // Scan loop
+  while (steps_left--) {
+    // Print status
+    fmt::print("\rStep {} of {}", step_count_ - steps_left, step_count_);
+
+    // Obtain profile
+    m_profiles.emplace_back(make_scan<T>());
+
+    // Send signal to make step
+    send_to_board(port, min_step);
+    // Check board response
+    check_board_response(port);
+  }
+
+  fmt::print("\n");
+
+  // Close serial port
+  if (port.is_open()) {
+    port.close();
+  }
+
+  return m_profiles;
+}
 } // namespace sc

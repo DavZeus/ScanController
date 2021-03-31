@@ -21,9 +21,6 @@
     <ClCompile Include="scan_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dimension_converter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="model_constructor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,18 +33,21 @@
     <ClCompile Include="program_arguments.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="camera_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scan_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dimension_converter.h">
+    <ClInclude Include="dimension_converter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="model_constructor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="boost_winver.h">
+    <ClInclude Include="windefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common_usings.h">
@@ -60,6 +60,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="program_arguments.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simple_kalman_filter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

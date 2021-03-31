@@ -7,8 +7,9 @@ namespace sc {
 class runner {
   program_arguments options_{};
 
-  auto do_scan_branch() const -> data_points;
-  auto do_data_load_branch() const -> data_points;
+  auto do_scan_branch() const -> model_profiles<float>;
+  // TODO: Wait for rewritten io_operations
+  // auto do_data_load_branch() const -> model_profiles;
 
 public:
   auto start(int argc, char *argv[]) -> int;

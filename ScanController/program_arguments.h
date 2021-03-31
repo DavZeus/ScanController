@@ -1,6 +1,6 @@
 #pragma once
 
-#include "boost_winver.h"
+#include "windefs.h"
 
 #include <boost/program_options.hpp>
 

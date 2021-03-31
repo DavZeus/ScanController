@@ -118,6 +118,9 @@ auto sc::model_constructor::do_poisson(point_set &points) const
 }
 
 auto sc::model_constructor::make_mesh(point_set points) const -> surface_mesh {
+  if (points.empty()) {
+    throw std::exception("No points for model");
+  }
   process_additional(points);
   switch (method_) {
   case methods::advancing_front:
