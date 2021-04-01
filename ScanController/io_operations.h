@@ -3,71 +3,82 @@
 #include "common_usings.h"
 #include <filesystem>
 #include <fstream>
+#include <list>
 
 namespace sc {
 
 namespace io {
+
+constexpr auto data_header = "x-z";
+constexpr auto end_part = "-";
+constexpr auto end_pair = "^";
 
 // Get current time as string
 auto generate_time_string() -> std::string;
 // Write mesh to stl file
 auto write_mesh(std::string path, const surface_mesh &mesh) -> void;
 // Write data camera point data
-// TODO: Rewrite
-// template <std::floating_point T>
-// auto write_data_points(const model_profiles<T> &points,
-//                       std::string filename = {}) -> bool {
-//  if (filename.empty()) {
-//    filename = generate_time_string() + ".txt";
-//  } else {
-//    filename += ".txt";
-//  }
-//  std::ofstream outfile(filename);
-//  outfile << "x-z" << std::flush;
-//  if (!outfile) {
-//    return false;
-//  }
-//  for (const auto &v : points) {
-//    for (const auto &p : v) {
-//      outfile << '\n' << p.first << " " << p.second << std::flush;
-//    }
-//    outfile << "\n^" << std::flush;
-//  }
-//  return true;
-//}
+template <std::floating_point T>
+auto write_data_points(const model_profiles<T> &points,
+                       std::filesystem::path file = {}) -> void {
+  if (file.empty()) {
+    file = "model-" + generate_time_string() + ".txt";
+  } else if (file.extension().empty()) {
+    file.append(".txt");
+  }
+  std::ofstream outfile(file);
+  if (!outfile) {
+    throw std::exception("Can not open/create data file");
+  }
+  outfile << data_header << std::flush;
+  for (const auto &pair : points) {
+    for (const auto &profile : pair) {
+      for (const auto &point : profile) {
+        outfile << '\n' << point.x << ' ' << point.z << std::flush;
+      }
+      outfile << '\n' << end_part << std::flush;
+    }
+    outfile << '\n' << end_pair << std::flush;
+  }
+}
 
 // Read data saved camera point data
-// TODO: Rewrite
-// template <std::floating_point T>
-// auto read_data_points(const std::string &filename) -> model_profiles<T> {
-//  model_profiles<T> points;
-//  if (!std::filesystem::exists(filename)) {
-//    throw std::exception("There is no such data file");
-//  }
-//  std::ifstream file(filename);
-//  if (!file) {
-//    throw std::exception("Can not open data file");
-//  }
-//  std::string buffer;
-//  std::getline(file, buffer, '\n');
-//  if (buffer != "x-z") {
-//    throw std::exception("Wrong data file");
-//  }
-//  while (!file.eof()) {
-//    static profile_part vertical_points;
-//    std::getline(file, buffer, '\n');
-//    if (buffer == "^") {
-//      points.push_back(vertical_points);
-//      vertical_points.clear();
-//      continue;
-//    }
-//    static std::pair<float, float> point;
-//    std::stringstream stream(buffer);
-//    stream >> point.first >> point.second;
-//    vertical_points.push_back(point);
-//  }
-//  return points;
-//}
+template <std::floating_point T>
+auto read_data_points(const std::string &filename) -> model_profiles<T> {
+  model_profiles<T> points;
+  if (!std::filesystem::exists(filename)) {
+    throw std::exception("There is no such data file");
+  }
+  std::ifstream file(filename);
+  if (!file) {
+    throw std::exception("Can not open data file");
+  }
+  std::string buffer;
+  std::getline(file, buffer, '\n');
+  if (buffer != "x-z") {
+    throw std::exception("Wrong data file");
+  }
+  while (!file.eof()) {
+    static profile_pair<T> pair;
+    static profile_part<T> part;
+    static size_t i = 0;
+    std::getline(file, buffer, '\n');
+    if (buffer == end_part) {
+      pair.at(i) = {part.begin(), part.end()};
+      i ^= 1;
+      part.clear();
+      continue;
+    }
+    if (buffer == end_pair) {
+      points.push_back(pair);
+    }
+    static data_point<T> point;
+    std::stringstream stream(buffer);
+    stream >> point.first >> point.second;
+    part.push_back(point);
+  }
+  return points;
+}
 } // namespace io
 
 } // namespace sc
