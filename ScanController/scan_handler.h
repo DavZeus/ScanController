@@ -70,14 +70,19 @@ auto scan_handler::send_to_board(boost::asio::serial_port &port, T &message)
 
 template <std::floating_point T>
 auto scan_handler::make_scan() -> profile_pair<T> {
-  auto result = camera_.get_current_profiles<T>();
-  if (cut_level_ != 0) {
-    for (auto &part : result) {
-      auto it = std::find_if(
-          part.begin(), part.end(),
-          [this](const data_point<T> &i) { return cut_level_ > i.x; });
-      part.erase(it, part.end());
+  profile_pair<T> result;
+  try {
+    result = camera_.get_current_profiles<T>();
+    if (cut_level_ != 0) {
+      for (auto &part : result) {
+        auto it = std::find_if(
+            part.begin(), part.end(),
+            [this](const data_point<T> &i) { return cut_level_ > i.x; });
+        part.erase(it, part.end());
+      }
     }
+  } catch (const Pylon::RuntimeException &ex) {
+    throw std::exception(ex.GetDescription());
   }
   return result;
 }
@@ -113,8 +118,11 @@ auto scan_handler::start() -> model_profiles<T> {
   fmt::print("Scanning starts now.\n");
 
   // Init camera connection and settings
-  camera_.initialize();
-
+  try {
+    camera_.initialize();
+  } catch (const Pylon::RuntimeException &ex) {
+    throw std::exception(ex.GetDescription());
+  }
   // Set number of steps left
   auto steps_left = step_count_;
 
