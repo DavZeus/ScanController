@@ -74,7 +74,7 @@ auto read_data_points(const std::string &filename) -> model_profiles<T> {
     }
     static data_point<T> point;
     std::stringstream stream(buffer);
-    stream >> point.first >> point.second;
+    stream >> point.x >> point.z;
     part.push_back(point);
   }
   return points;
