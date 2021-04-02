@@ -3,7 +3,6 @@
 #include "common_usings.h"
 #include <filesystem>
 #include <fstream>
-#include <list>
 
 namespace sc {
 
