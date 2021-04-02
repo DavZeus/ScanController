@@ -19,32 +19,35 @@
 #include <CGAL/remove_outliers.h>
 
 auto sc::model_constructor::remove_outliers_from_set(point_set &points,
-                                                     size_t k_neighbors) const
-    -> void {
-  auto outliers_iterator = CGAL::remove_outliers<CGAL::Parallel_tag>(
+                                                     unsigned k_neighbors) const
+    -> void
+
+{
+  const auto outliers_iterator = CGAL::remove_outliers<CGAL::Parallel_tag>(
       points, k_neighbors, points.parameters().threshold_percent(5.0));
   points.remove(outliers_iterator, points.end());
   points.collect_garbage();
 }
 
 auto sc::model_constructor::simplify_set(point_set &points,
-                                         size_t k_neighbors) const -> void {
+                                         unsigned k_neighbors) const -> void {
   const auto spacing =
       CGAL::compute_average_spacing<CGAL::Parallel_tag>(points, k_neighbors);
-  auto simplification_iterator =
+  const auto simplification_iterator =
       CGAL::grid_simplify_point_set(points, 2. * spacing);
   points.remove(simplification_iterator, points.end());
   points.collect_garbage();
 }
 
 auto sc::model_constructor::smooth_set(point_set &points,
-                                       size_t k_neighbors) const -> void {
+                                       unsigned k_neighbors) const -> void {
   CGAL::jet_smooth_point_set<CGAL::Parallel_tag>(points, k_neighbors);
 }
 
 auto sc::model_constructor::process_additional(point_set &points) const
     -> void {
-  const auto k_neighbors = CGAL::estimate_global_k_neighbor_scale(points) * 2;
+  const auto k_neighbors =
+      static_cast<unsigned>(CGAL::estimate_global_k_neighbor_scale(points) * 2);
   if (options_ & remove_outliers) {
     remove_outliers_from_set(points, k_neighbors);
   }
@@ -103,11 +106,13 @@ auto sc::model_constructor::do_scale_space(point_set &points) const
 
 auto sc::model_constructor::do_poisson(point_set &points) const
     -> surface_mesh {
-  const auto k_neighbors = CGAL::estimate_global_k_neighbor_scale(points) * 2;
+  const auto k_neighbors =
+      static_cast<unsigned>(CGAL::estimate_global_k_neighbor_scale(points) * 2);
   const auto spacing =
       CGAL::compute_average_spacing<CGAL::Parallel_tag>(points, k_neighbors);
   CGAL::jet_estimate_normals<CGAL::Parallel_tag>(points, k_neighbors);
-  auto unoriented_points_begin = CGAL::mst_orient_normals(points, k_neighbors);
+  const auto unoriented_points_begin =
+      CGAL::mst_orient_normals(points, k_neighbors);
   points.remove(unoriented_points_begin, points.end());
   points.collect_garbage();
   surface_mesh output_mesh;

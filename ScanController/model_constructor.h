@@ -31,12 +31,12 @@ private:
   additional_options options_;
 
   // Remove outliers from point cloud
-  auto remove_outliers_from_set(point_set &points, size_t k_neighbors) const
+  auto remove_outliers_from_set(point_set &points, unsigned k_neighbors) const
       -> void;
   // Simplify point cloud
-  auto simplify_set(point_set &points, size_t k_neighbors) const -> void;
+  auto simplify_set(point_set &points, unsigned k_neighbors) const -> void;
   // Smooth point cloud
-  auto smooth_set(point_set &points, size_t k_neighbors) const -> void;
+  auto smooth_set(point_set &points, unsigned k_neighbors) const -> void;
   // Perform pre-reconstruction point cloud modification if needed
   auto process_additional(point_set &points) const -> void;
   // Reconstruct model using advancing front method
