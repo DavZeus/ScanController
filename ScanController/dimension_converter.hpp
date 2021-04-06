@@ -58,12 +58,12 @@ auto dimension_converter<T>::convert(model_profiles<T> &&d_points) const
     for (const auto &profile : profile_pair) {
       if (!profile.empty()) {
         for (const auto &point : profile) {
-          const T hx =
-              (point.x - half_camera_height) * pixel_size / micro_multiplier;
+          const T hx = (point.x - half_camera_width) *
+                       pixel_size / micro_multiplier;
           const T p_x = camera_distance_ +
                         (camera_distance_ - focus_length) * hx / focus_length;
           const T hz =
-              (point.z - half_camera_width) * pixel_size / micro_multiplier;
+              (point.z - half_camera_height) * pixel_size / micro_multiplier;
           const T z = (camera_distance_ - focus_length) * hz / focus_length;
 
           const T cos_a = cathetus / p_x;

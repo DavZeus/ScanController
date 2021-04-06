@@ -69,8 +69,8 @@ auto camera_handler::make_single_profile(const cv::Mat &image)
                col_2 < image.cols) {
           ++col_2;
         }
-        result.emplace_back(static_cast<T>(row),
-                            static_cast<T>(col_1 + col_2 - 1) / two);
+        result.emplace_back(static_cast<T>(col_1 + col_2 - 1) / two,
+                            static_cast<T>(row));
         col_1 = col_2;
       }
       ++col_1;
