@@ -55,7 +55,7 @@ auto sc::runner::start(int argc, char *argv[]) -> int {
     const model_constructor constructor(
         model_constructor::methods::advancing_front);
     const auto mesh = constructor.make_mesh(points);
-    io::write_mesh("model.stl", mesh);
+    io::write_mesh(mesh);
   } catch (const std::exception &ex) {
     fmt::print(stderr, "\n{}\n", ex.what());
     return EXIT_FAILURE;

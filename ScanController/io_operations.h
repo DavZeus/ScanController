@@ -15,13 +15,14 @@ constexpr auto end_pair = "^";
 // Get current time as string
 auto generate_time_string() -> std::string;
 // Write mesh to stl file
-auto write_mesh(std::string path, const surface_mesh &mesh) -> void;
+auto write_mesh(const surface_mesh &mesh, std::filesystem::path filename = {})
+    -> void;
 // Write data camera point data
 template <std::floating_point T>
 auto write_data_points(const model_profiles<T> &points,
                        std::filesystem::path file = {}) -> void {
   if (file.empty()) {
-    file = "model-" + generate_time_string() + ".txt";
+    file = "points-" + generate_time_string() + ".txt";
   } else if (file.extension().empty()) {
     file.append(".txt");
   }
