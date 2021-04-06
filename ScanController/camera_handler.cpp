@@ -29,18 +29,6 @@ auto sc::camera_handler::take_photos() -> img_array {
       }
     }
   }
-  /*cameras_.StartGrabbing();
-  for (size_t i = 0; i < number_of_cameras && cameras_.IsGrabbing(); ++i) {
-    Pylon::CGrabResultPtr result;
-    cameras_.RetrieveResult(INFINITE, result);
-    cv::Mat img(result->GetHeight(), result->GetWidth(), CV_8U);
-    std::memcpy(img.data, static_cast<uint8_t *>(result->GetBuffer()),
-                sizeof(uint8_t) * img.cols * img.rows);
-
-    const auto camera_context_value = result->GetCameraContext();
-    photos.at(camera_context_value) = img;
-  }
-  cameras_.StopGrabbing();*/
   return photos;
 }
 
@@ -55,24 +43,9 @@ auto sc::camera_handler::preprocess_images(img_array &images) -> void {
       }
     });
     cv::erode(images.at(i), images.at(i), structuring_element);
-    /*cv::Mat rotated_img(images.at(i).cols, images.at(i).rows,
-                        images.at(i).type());
-    switch (static_cast<camera_position>(i)) {
-    case camera_position::left:
-      cv::rotate(images.at(i), rotated_img, cv::ROTATE_90_CLOCKWISE);
-
-      break;
-    case camera_position::right:
-
-      cv::rotate(images.at(i), rotated_img, cv::ROTATE_90_COUNTERCLOCKWISE);
-      cv::flip(rotated_img, rotated_img, 1);
-      break;
-    }*/
     if (static_cast<camera_position>(i) == camera_position::right) {
       cv::flip(images.at(i), images.at(i), 1);
-      // cv::flip(rotated_img, rotated_img, 1);
     }
-    // images.at(i) = rotated_img;
   }
 }
 
