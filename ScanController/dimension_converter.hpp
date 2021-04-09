@@ -15,9 +15,9 @@ template <std::floating_point T> class dimension_converter {
   inline static constexpr T straight_angle = static_cast<T>(180); // degrees
   inline static constexpr T focus_length = static_cast<T>(4.09);
   // millimeters, lens
-  inline static constexpr T camera_width_resolution = static_cast<T>(1088);
+  inline static constexpr T camera_width_resolution = static_cast<T>(1456);
   // pixels, camera
-  inline static constexpr T camera_height_resolution = static_cast<T>(1456);
+  inline static constexpr T camera_height_resolution = static_cast<T>(1088);
   // pixels, camera
   inline static constexpr T half_camera_width =
       camera_width_resolution / static_cast<T>(2);
