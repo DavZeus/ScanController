@@ -29,6 +29,7 @@ class camera_handler {
   Pylon::PylonAutoInitTerm pylon_init_term_;
   Pylon::CInstantCameraArray cameras_{number_of_cameras};
 
+  std::string path_;
   size_t img_number_{0};
 
   //

@@ -4,10 +4,11 @@
 
 #include "camera_handler.h"
 
+#include "io_operations.h"
+
 #include <filesystem>
 #include <fmt/format.h>
 #include <opencv2/core.hpp>
-#include <opencv2/imgcodecs.hpp>
 
 auto sc::camera_handler::take_photos() -> img_array {
   img_array photos;
@@ -18,7 +19,8 @@ auto sc::camera_handler::take_photos() -> img_array {
         Pylon::CGrabResultPtr result;
         cameras_[i].GrabOne(INFINITE, result);
         // Save logic start
-        std::string file = std::string(static_cast<sc::camera_position>(i) ==
+        std::string file = path_ + '\\' +
+                           std::string(static_cast<sc::camera_position>(i) ==
                                                sc::camera_position::left
                                            ? "left-"
                                            : "right-") +
@@ -104,4 +106,6 @@ auto sc::camera_handler::initialize() -> void {
     Pylon::CBooleanParameter(node_map, "CenterY").SetValue(true);
   }
   // Save logic start
+  path_ = io::generate_time_string();
+  std::filesystem::create_directory(path_);
 }
