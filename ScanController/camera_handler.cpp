@@ -4,8 +4,10 @@
 
 #include "camera_handler.h"
 
+#include <filesystem>
 #include <fmt/format.h>
 #include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 auto sc::camera_handler::take_photos() -> img_array {
   img_array photos;
@@ -14,11 +16,24 @@ auto sc::camera_handler::take_photos() -> img_array {
     while (true) {
       try {
         Pylon::CGrabResultPtr result;
-        cameras_[i].GrabOne(INFINITE, result, Pylon::TimeoutHandling_Return);
-        cv::Mat img(result->GetHeight(), result->GetWidth(), CV_8U);
-        std::memcpy(img.data, static_cast<uint8_t *>(result->GetBuffer()),
-                    sizeof(uint8_t) * img.cols * img.rows);
-        photos.at(i) = img;
+        cameras_[i].GrabOne(INFINITE, result);
+        // Save logic start
+        std::string file = std::string(static_cast<sc::camera_position>(i) ==
+                                               sc::camera_position::left
+                                           ? "left-"
+                                           : "right-") +
+                           '-' + std::to_string(img_number_);
+        Pylon::CPylonImage p_img;
+        p_img.AttachGrabResultBuffer(result);
+        p_img.Save(Pylon::ImageFileFormat_Bmp, file.c_str());
+        p_img.Save(Pylon::ImageFileFormat_Raw, file.c_str());
+        p_img.Save(Pylon::ImageFileFormat_Png, file.c_str());
+        ++img_number_;
+        // Save logic end
+        cv::Mat cv_img(result->GetHeight(), result->GetWidth(), CV_8U);
+        std::memcpy(cv_img.data, static_cast<uint8_t *>(result->GetBuffer()),
+                    sizeof(uint8_t) * cv_img.cols * cv_img.rows);
+        photos.at(i) = cv_img;
         break;
       } catch (const Pylon::RuntimeException &ex) {
         fmt::print(stderr, "\n{}\n", ex.GetDescription());
@@ -50,6 +65,7 @@ auto sc::camera_handler::preprocess_images(img_array &images) -> void {
 }
 
 auto sc::camera_handler::initialize() -> void {
+
   Pylon::DeviceInfoList device_info_list;
   Pylon::CTlFactory &transport_layer_factory = Pylon::CTlFactory::GetInstance();
   if (transport_layer_factory.EnumerateDevices(device_info_list) == 0) {
@@ -87,4 +103,5 @@ auto sc::camera_handler::initialize() -> void {
     Pylon::CBooleanParameter(node_map, "CenterX").SetValue(true);
     Pylon::CBooleanParameter(node_map, "CenterY").SetValue(true);
   }
+  // Save logic start
 }
