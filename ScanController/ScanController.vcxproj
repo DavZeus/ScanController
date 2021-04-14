@@ -203,7 +203,7 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
     <ClInclude Include="program_arguments.h" />
     <ClInclude Include="runner.h" />
     <ClInclude Include="scan_handler.h" />
-    <ClInclude Include="windefs.h" />
+    <ClInclude Include="my_windefs.h" />
     <ClInclude Include="simple_kalman_filter.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
