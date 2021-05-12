@@ -11,13 +11,12 @@
 #include <sstream>
 
 auto sc::io::generate_time_string() -> std::string {
-  std::string time_string;
-  std::stringstream time_parse(time_string);
+  std::stringstream time_parse);
   auto time =
       std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
   auto tm = *std::localtime(&time);
   time_parse << std::put_time(&tm, "%FT%T") << std::flush;
-  return time_string;
+  return time_parse.str();
 }
 
 auto sc::io::write_mesh(const surface_mesh &mesh,
