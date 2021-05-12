@@ -1,6 +1,6 @@
 #pragma once
 
-#include "windefs.h"
+#include "sc_defs.h"
 
 #include "common_usings.h"
 
