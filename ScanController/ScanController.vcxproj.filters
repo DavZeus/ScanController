@@ -47,7 +47,7 @@
     <ClInclude Include="model_constructor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="windefs.h">
+    <ClInclude Include="sc_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common_usings.h">
