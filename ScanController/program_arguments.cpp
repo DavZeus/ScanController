@@ -11,7 +11,8 @@ auto sc::program_arguments::parse(int argc, char *argv[]) -> void {
   notify(vm_);
 }
 
-auto sc::program_arguments::check_value(const std::string_view &key) const -> size_t {
+auto sc::program_arguments::check_value(const std::string_view &key) const
+    -> size_t {
   return vm_.count(key.data());
 }
 
@@ -20,7 +21,8 @@ auto sc::program_arguments::get_value(const std::string_view &key) const
   return vm_.at(key.data());
 }
 
-sc::program_arguments::program_arguments() : description_("Allowed program program_arguments") {
+sc::program_arguments::program_arguments()
+    : description_("Allowed program program_arguments") {
   description_.add_options()(help_switch.data(), help_desc.data())(
       com_switch.data(),
       boost::program_options::value<short>()->default_value(
@@ -35,5 +37,13 @@ sc::program_arguments::program_arguments() : description_("Allowed program progr
       boost::program_options::value<float>()->default_value(0.F),
       cut_desc.data())(save_switch.data(), save_desc.data())(
       load_switch.data(), boost::program_options::value<std::string>(),
-      load_desc.data());
+      load_desc.data())(
+      "method",
+      boost::program_options::value<int>()->default_value(static_cast<int>(0)),
+      "reconstruction method: 0 - advancing front, 1 - scale "
+      "space, 2 - Poisson")(
+      "add",
+      boost::program_options::value<int>()->default_value(static_cast<int>(3)),
+      "additional preprocess point cloud: 0 - simplification, 1 - "
+      "remove outliers, 2 - smoothing, 3 - all");
 }

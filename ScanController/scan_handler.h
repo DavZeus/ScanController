@@ -115,7 +115,7 @@ auto scan_handler::start() -> model_profiles<T> {
   check_board_response(port);
 
   // Print status
-  fmt::print("Scanning starts now.\n");
+  fmt::print("Initializing cameras...\n");
 
   // Init camera connection and settings
   try {
@@ -125,6 +125,9 @@ auto scan_handler::start() -> model_profiles<T> {
   }
   // Set number of steps left
   auto steps_left = step_count_;
+
+  // Print status
+  fmt::print("Scanning starts now.\n");
 
   // Scan loop
   while (steps_left--) {

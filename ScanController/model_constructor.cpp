@@ -17,6 +17,7 @@
 #include <CGAL/mst_orient_normals.h>
 #include <CGAL/poisson_surface_reconstruction.h>
 #include <CGAL/remove_outliers.h>
+#include <fmt/core.h>
 
 auto sc::model_constructor::remove_outliers_from_set(point_set &points,
                                                      unsigned k_neighbors) const
@@ -46,15 +47,25 @@ auto sc::model_constructor::smooth_set(point_set &points,
 
 auto sc::model_constructor::process_additional(point_set &points) const
     -> void {
+
   const auto k_neighbors =
       static_cast<unsigned>(CGAL::estimate_global_k_neighbor_scale(points) * 2);
   if (options_ & remove_outliers) {
+    // Print status
+    fmt::print("Additional: Removing outliers...\n");
+
     remove_outliers_from_set(points, k_neighbors);
   }
   if (options_ & simplification) {
+    // Print status
+    fmt::print("Additional: Simplifying point cloud...\n");
+
     simplify_set(points, k_neighbors);
   }
   if (options_ & smooth) {
+    // Print status
+    fmt::print("Additional: Applying smoothing...\n");
+
     smooth_set(points, k_neighbors);
   }
 }
@@ -129,10 +140,20 @@ auto sc::model_constructor::make_mesh(point_set points) const -> surface_mesh {
   process_additional(points);
   switch (method_) {
   case methods::advancing_front:
+    // Print status
+    fmt::print(
+        "Model reconstruction: Advancing front surface reconstruction.\n");
+
     return do_advancing_front(points);
   case methods::scale_space:
+    // Print status
+    fmt::print("Model reconstruction: Scale space surface reconstruction.\n");
+
     return do_scale_space(points);
   case methods::poisson:
+    // Print status
+    fmt::print("Model reconstruction: Poisson surface reconstruction.\n");
+
     return do_poisson(points);
   default:
     throw std::exception("There is not such model construction methods");
