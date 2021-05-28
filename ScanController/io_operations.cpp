@@ -11,7 +11,7 @@
 #include <sstream>
 
 auto sc::io::generate_time_string() -> std::string {
-  std::stringstream time_parse);
+  std::stringstream time_parse;
   auto time =
       std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
   auto tm = *std::localtime(&time);
