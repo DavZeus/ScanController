@@ -10,12 +10,14 @@
 auto sc::camera_handler::take_photo() -> cv::Mat {
   Pylon::CGrabResultPtr result;
 
-  while (!camera_.GrabOne(INFINITE, result, Pylon::TimeoutHandling_Return)) {
-    fmt::print("\n{}\n", result->GetErrorDescription().c_str());
-  }
+  camera_.StartGrabbing(images_number);
+  camera_.WaitForFrameTriggerReady(trigger_wait_time);
+  camera_.ExecuteSoftwareTrigger();
+  camera_.RetrieveResult(trigger_wait_time, result);
+
   cv::Mat img(result->GetHeight(), result->GetWidth(), CV_8U);
-  std::memcpy(img.data, static_cast<uint8_t *>(result->GetBuffer()),
-              sizeof(uint8_t) * img.cols * img.rows);
+  std::memcpy(img.data, result->GetBuffer(),
+              static_cast<size_t>(img.cols) * img.rows);
   return img;
 }
 
@@ -41,6 +43,10 @@ auto sc::camera_handler::initialize() -> void {
   if (!camera_.IsOpen()) {
     throw std::exception("Can not connect to cameras");
   }
+
+  camera_.RegisterConfiguration(new Pylon::CSoftwareTriggerConfiguration,
+                                Pylon::RegistrationMode_ReplaceAll,
+                                Pylon::Cleanup_Delete);
 
   auto &node_map = camera_.GetNodeMap();
   Pylon::CEnumParameter(node_map, "ExposureMode").SetValue("Timed");
