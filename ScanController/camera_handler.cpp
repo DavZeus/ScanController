@@ -48,12 +48,23 @@ auto sc::camera_handler::initialize() -> void {
                                 Pylon::RegistrationMode_ReplaceAll,
                                 Pylon::Cleanup_Delete);
 
-  auto &node_map = camera_.GetNodeMap();
-  Pylon::CEnumParameter(node_map, "ExposureMode").SetValue("Timed");
-  Pylon::CFloatParameter(node_map, "ExposureTimeAbs").SetValue(exposure_time);
-  Pylon::CEnumParameter(node_map, "PixelFormat").SetValue(pixel_format.data());
-  Pylon::CIntegerParameter(node_map, "Width").TrySetToMaximum();
-  Pylon::CIntegerParameter(node_map, "Height").TrySetToMaximum();
-  Pylon::CBooleanParameter(node_map, "CenterX").SetValue(true);
-  Pylon::CBooleanParameter(node_map, "CenterY").SetValue(true);
+  camera_.ExposureMode.SetValue(
+      Basler_UniversalCameraParams::ExposureMode_Timed);
+  camera_.ExposureTimeAbs.SetValue(exposure_time);
+  camera_.PixelFormat.SetValue(Basler_UniversalCameraParams::PixelFormat_Mono8);
+  camera_.Width.SetToMaximum();
+  camera_.Height.SetToMaximum();
+  camera_.CenterX.SetValue(true);
+  camera_.CenterY.SetValue(true);
+
+  // auto &node_map = camera_.GetNodeMap();
+  // Pylon::CEnumParameter(node_map, "ExposureMode").SetValue("Timed");
+  // Pylon::CFloatParameter(node_map,
+  // "ExposureTimeAbs").SetValue(exposure_time);
+  // Pylon::CEnumParameter(node_map,
+  // "PixelFormat").SetValue(pixel_format.data());
+  // Pylon::CIntegerParameter(node_map, "Width").TrySetToMaximum();
+  // Pylon::CIntegerParameter(node_map, "Height").TrySetToMaximum();
+  // Pylon::CBooleanParameter(node_map, "CenterX").SetValue(true);
+  // Pylon::CBooleanParameter(node_map, "CenterY").SetValue(true);
 }

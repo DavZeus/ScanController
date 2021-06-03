@@ -3,6 +3,7 @@
 #include <concepts>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgproc.hpp>
+#include <pylon/BaslerUniversalInstantCamera.h>
 #include <pylon/PylonIncludes.h>
 
 #include "common_usings.h"
@@ -23,7 +24,7 @@ class camera_handler {
   static constexpr uint8_t mono_white = 255;
 
   Pylon::PylonAutoInitTerm pylon_init_term_;
-  Pylon::CInstantCamera camera_;
+  Pylon::CBaslerUniversalInstantCamera camera_;
 
   //
   auto take_photo() -> cv::Mat;

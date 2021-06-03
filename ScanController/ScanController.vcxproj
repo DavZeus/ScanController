@@ -145,6 +145,7 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(PYLON_DEV_DIR)lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GCBase_MD_VC141_v3_1_Basler_pylon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -176,6 +177,7 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(PYLON_DEV_DIR)lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GCBase_MD_VC141_v3_1_Basler_pylon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
