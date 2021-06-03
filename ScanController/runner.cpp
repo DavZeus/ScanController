@@ -50,7 +50,7 @@ auto sc::runner::start(int argc, char *argv[]) -> int {
     }
     const auto camera_distance =
         options_.get_value(program_arguments::distance_switch).as<float>();
-    const dimension_converter<float> converter(camera_distance);
+    const dimension_converter converter(camera_distance);
 
     // Print status
     fmt::print("Converting profiles to point cloud...\n");

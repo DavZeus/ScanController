@@ -49,29 +49,28 @@ auto dimension_converter<T>::convert(model_profiles<T> &&d_points) const
   const T d = camera_distance_ - focus_length;
 
   point_set cloud;
+
   unsigned angle_multiplier = 0;
   T rad = static_cast<T>(0);
 
-  for (const auto &profile_pair : d_points) {
+  for (const auto &profile : d_points) {
     const T cos_rad = std::cos(rad);
     const T sin_rad = std::sin(rad);
-    for (const auto &profile : profile_pair) {
-      if (!profile.empty()) {
-        for (const auto &point : profile) {
+    if (!profile.empty()) {
+      for (const auto &point : profile) {
 
-          const T hx = (point.x - half_camera_width) * pixel_size;
-          const T mx = hx * d;
-          const T r = mx / (mx + focus_length);
+        const T hx = (point.x - half_camera_width) * pixel_size;
+        const T mx = hx * d;
+        const T r = mx / (mx + focus_length);
 
-          const T hz = (point.z - half_camera_height) * pixel_size;
-          const T mz = hz * d;
-          const T z = hz / (hz + focus_length);
+        const T hz = (point.z - half_camera_height) * pixel_size;
+        const T mz = hz * d;
+        const T z = hz / (hz + focus_length);
 
-          const T x = cos_rad * r;
-          const T y = sin_rad * r;
+        const T x = cos_rad * r;
+        const T y = sin_rad * r;
 
-          cloud.insert({x, y, z});
-        }
+        cloud.insert({x, y, z});
       }
     }
     ++angle_multiplier;

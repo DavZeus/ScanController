@@ -5,6 +5,11 @@
 namespace sc {
 
 class model_constructor {
+  // Stores points for use in CGAL
+  using point_set =
+      CGAL::Point_set_3<CGAL::Epick::Point_3, CGAL::Epick::Vector_3>;
+  // Stores reconstructed model
+  using surface_mesh = CGAL::Surface_mesh<CGAL::Epick::Point_3>;
 
 public:
   // Reconstruction methods

@@ -40,8 +40,7 @@ class scan_handler {
   //
   camera_handler camera_;
 
-  template <std::floating_point T>
-  [[nodiscard]] auto make_scan() -> profile_pair<T>;
+  template <std::floating_point T> [[nodiscard]] auto make_scan() -> profile<T>;
 
 public:
   explicit scan_handler(std::string com_port, float cut_level = 0,
@@ -68,18 +67,15 @@ auto scan_handler::send_to_board(boost::asio::serial_port &port, T &message)
   write(port, o_buf.data());
 }
 
-template <std::floating_point T>
-auto scan_handler::make_scan() -> profile_pair<T> {
-  profile_pair<T> result;
+template <std::floating_point T> auto scan_handler::make_scan() -> profile<T> {
+  profile<T> result;
   try {
-    result = camera_.get_current_profiles<T>();
+    result = camera_.get_current_profile<T>();
     if (cut_level_ != 0) {
-      for (auto &part : result) {
-        auto it = std::find_if(
-            part.begin(), part.end(),
-            [this](const data_point<T> &i) { return cut_level_ > i.x; });
-        part.erase(it, part.end());
-      }
+      auto it = std::find_if(
+          result.begin(), result.end(),
+          [this](const data_point<T> &i) { return cut_level_ > i.x; });
+      result.erase(it, result.end());
     }
   } catch (const Pylon::RuntimeException &ex) {
     throw std::exception(ex.GetDescription());

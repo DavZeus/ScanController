@@ -9,8 +9,7 @@ namespace sc {
 namespace io {
 
 constexpr auto data_header = "x-z";
-constexpr auto end_part = "-";
-constexpr auto end_pair = "^";
+constexpr auto end_profile = "-";
 
 // Get current time as string
 auto generate_time_string() -> std::string;
@@ -31,14 +30,11 @@ auto write_data_points(const model_profiles<T> &points,
     throw std::exception("Can not open/create data file");
   }
   outfile << data_header << std::flush;
-  for (const auto &pair : points) {
-    for (const auto &profile : pair) {
-      for (const auto &point : profile) {
-        outfile << '\n' << point.x << ' ' << point.z << std::flush;
-      }
-      outfile << '\n' << end_part << std::flush;
+  for (const auto &profile : points) {
+    for (const auto &point : profile) {
+      outfile << '\n' << point.x << ' ' << point.z << std::flush;
     }
-    outfile << '\n' << end_pair << std::flush;
+    outfile << '\n' << end_profile << std::flush;
   }
 }
 
@@ -59,23 +55,17 @@ auto read_data_points(const std::string &filename) -> model_profiles<T> {
     throw std::exception("Wrong data file");
   }
   while (!file.eof()) {
-    static profile_pair<T> pair;
-    static profile_part<T> part;
-    static size_t i = 0;
+    static profile<T> profile;
     std::getline(file, buffer, '\n');
-    if (buffer == end_part) {
-      pair.at(i) = {part.begin(), part.end()};
-      i ^= 1;
-      part.clear();
+    if (buffer == end_profile) {
+      points.emplace_back(profile);
+      profile.clear();
       continue;
-    }
-    if (buffer == end_pair) {
-      points.push_back(pair);
     }
     static data_point<T> point;
     std::stringstream stream(buffer);
     stream >> point.x >> point.z;
-    part.push_back(point);
+    profile.push_back(point);
   }
   return points;
 }

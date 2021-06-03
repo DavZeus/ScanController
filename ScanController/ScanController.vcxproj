@@ -139,6 +139,7 @@ XCOPY "$(ProjectDir)scanner" "$(OutDir)scanner" /S /Y</Command>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(PYLON_DEV_DIR)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
