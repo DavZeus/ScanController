@@ -52,8 +52,8 @@ auto sc::camera_handler::initialize() -> void {
   Pylon::CEnumParameter(node_map, "ExposureMode").SetValue("Timed");
   Pylon::CFloatParameter(node_map, "ExposureTimeAbs").SetValue(exposure_time);
   Pylon::CEnumParameter(node_map, "PixelFormat").SetValue(pixel_format.data());
-  Pylon::CIntegerParameter(node_map, "Width").TrySetToMaximum();
-  Pylon::CIntegerParameter(node_map, "Height").TrySetToMaximum();
+  Pylon::CIntegerParameter(node_map, "Width").SetToMaximum();
+  Pylon::CIntegerParameter(node_map, "Height").SetToMaximum();
   Pylon::CBooleanParameter(node_map, "CenterX").SetValue(true);
   Pylon::CBooleanParameter(node_map, "CenterY").SetValue(true);
 }
