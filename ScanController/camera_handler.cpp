@@ -4,7 +4,6 @@
 
 #include "camera_handler.h"
 
-#include <fmt/core.h>
 #include <opencv2/core.hpp>
 
 auto sc::camera_handler::take_photo() -> cv::Mat {
