@@ -11,10 +11,8 @@
 namespace sc {
 class camera_handler {
   static constexpr size_t images_number = 1;
-  static constexpr uint32_t trigger_wait_time = 10000;
+  static constexpr uint32_t trigger_wait_time = 5000;
 
-  static constexpr std::string_view exposure_mode{"Standard"};
-  static constexpr std::string_view pixel_format{"Mono8"};
   static constexpr double exposure_time = 10000.;
 
   static constexpr cv::MorphShapes erosion_type{cv::MORPH_CROSS};

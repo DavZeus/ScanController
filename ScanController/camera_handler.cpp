@@ -4,16 +4,19 @@
 
 #include "camera_handler.h"
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 #include <opencv2/core.hpp>
 
 auto sc::camera_handler::take_photo() -> cv::Mat {
   Pylon::CGrabResultPtr result;
 
-  camera_.StartGrabbing(images_number);
-  camera_.WaitForFrameTriggerReady(trigger_wait_time);
-  camera_.ExecuteSoftwareTrigger();
-  camera_.RetrieveResult(trigger_wait_time, result);
+  // Loop is needed because image can be not grabbed
+  do {
+    camera_.StartGrabbing(images_number);
+    camera_.WaitForFrameTriggerReady(trigger_wait_time);
+    camera_.ExecuteSoftwareTrigger();
+    camera_.RetrieveResult(INFINITE, result);
+  } while (!result->GrabSucceeded());
 
   cv::Mat img(result->GetHeight(), result->GetWidth(), CV_8U);
   std::memcpy(img.data, result->GetBuffer(),
@@ -39,19 +42,20 @@ auto sc::camera_handler::initialize() -> void {
     throw std::exception("There is no camera");
   }
 
+  camera_.RegisterConfiguration(new Pylon::CSoftwareTriggerConfiguration,
+                                Pylon::RegistrationMode_ReplaceAll,
+                                Pylon::Cleanup_Delete);
+
   camera_.Open();
   if (!camera_.IsOpen()) {
     throw std::exception("Can not connect to cameras");
   }
 
-  camera_.RegisterConfiguration(new Pylon::CSoftwareTriggerConfiguration,
-                                Pylon::RegistrationMode_ReplaceAll,
-                                Pylon::Cleanup_Delete);
-
   auto &node_map = camera_.GetNodeMap();
-  Pylon::CEnumParameter(node_map, "ExposureMode").SetValue("Timed");
+  Pylon::CEnumParameter(node_map, "ExposureMode")
+      .SetValue("Timed"); // or Standard
   Pylon::CFloatParameter(node_map, "ExposureTimeAbs").SetValue(exposure_time);
-  Pylon::CEnumParameter(node_map, "PixelFormat").SetValue(pixel_format.data());
+  Pylon::CEnumParameter(node_map, "PixelFormat").SetValue("Mono8");
   Pylon::CIntegerParameter(node_map, "Width").SetToMaximum();
   Pylon::CIntegerParameter(node_map, "Height").SetToMaximum();
   Pylon::CBooleanParameter(node_map, "CenterX").SetValue(true);
