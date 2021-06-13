@@ -55,7 +55,7 @@ auto sc::runner::start(int argc, char *argv[]) -> int {
     // Print status
     fmt::print("Converting profiles to point cloud...\n");
 
-    const auto points = converter.convert(std::move(d_points));
+    const auto points = converter.convert_circle(std::move(d_points));
     const model_constructor constructor(
         model_constructor::methods::advancing_front);
     const auto mesh = constructor.make_mesh(points);

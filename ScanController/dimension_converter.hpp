@@ -34,7 +34,12 @@ public:
   explicit dimension_converter(T camera_distance);
 
   // Performs converting of data from scanner to point cloud
-  [[nodiscard]] auto convert(model_profiles<T> &&d_points) const -> point_set;
+  [[nodiscard]] auto convert_circle(model_profiles<T> &&d_points,
+                                    const T required_angle = full_angle) const
+      -> point_set;
+
+  [[nodiscard]] auto convert_plain(model_profiles<T> &&d_points,
+                                   const T step_length) const -> point_set;
 };
 
 template <std::floating_point T>
@@ -42,7 +47,8 @@ dimension_converter<T>::dimension_converter(T camera_distance)
     : camera_distance_(camera_distance) {}
 
 template <std::floating_point T>
-auto dimension_converter<T>::convert(model_profiles<T> &&d_points) const
+auto dimension_converter<T>::convert_circle(model_profiles<T> &&d_points,
+                                            const T required_angle) const
     -> point_set {
   const T angle = full_angle / static_cast<T>(d_points.size());
 
@@ -51,11 +57,18 @@ auto dimension_converter<T>::convert(model_profiles<T> &&d_points) const
   point_set cloud;
 
   unsigned angle_multiplier = 0;
-  T rad = static_cast<T>(0);
 
   for (const auto &profile : d_points) {
+    if (required_angle > angle * static_cast<T>(angle_multiplier)) {
+      break;
+    }
+
+    const T rad = angle * static_cast<T>(angle_multiplier) *
+                  std::numbers::pi_v<T> / straight_angle;
+
     const T cos_rad = std::cos(rad);
     const T sin_rad = std::sin(rad);
+
     if (!profile.empty()) {
       for (const auto &point : profile) {
 
@@ -73,9 +86,40 @@ auto dimension_converter<T>::convert(model_profiles<T> &&d_points) const
         cloud.insert({x, y, z});
       }
     }
+
     ++angle_multiplier;
-    rad = angle * static_cast<T>(angle_multiplier) * std::numbers::pi_v<T> /
-          straight_angle;
+  }
+  return cloud;
+}
+
+template <std::floating_point T>
+auto dimension_converter<T>::convert_plain(model_profiles<T> &&d_points,
+                                           const T step_length) const
+    -> point_set {
+  const T d = camera_distance_ - focus_length;
+
+  point_set cloud;
+
+  unsigned step_multiplier = 0;
+
+  for (const auto &profile : d_points) {
+    if (!profile.empty()) {
+      for (const auto &point : profile) {
+
+        const T hx = (point.x - half_camera_width) * pixel_size;
+        const T mx = hx * d;
+        const T x = mx / (mx + focus_length);
+
+        const T hz = (point.z - half_camera_height) * pixel_size;
+        const T mz = hz * d;
+        const T z = hz / (hz + focus_length);
+
+        const T y = step_length * step_multiplier;
+
+        cloud.insert({x, y, z});
+      }
+    }
+    ++step_multiplier;
   }
   return cloud;
 }
