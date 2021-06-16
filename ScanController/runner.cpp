@@ -10,7 +10,7 @@ auto sc::runner::do_scan_branch() const -> model_profiles<float> {
   const auto com =
       "COM" +
       std::to_string(
-          options_.get_value(program_arguments::com_switch).as<short>());
+          options_.get_value(program_arguments::com_switch).as<unsigned>());
   const auto cut_level =
       options_.get_value(program_arguments::cut_switch).as<float>();
   const auto step_count =
