@@ -71,7 +71,7 @@ template <std::floating_point T> auto scan_handler::make_scan() -> profile<T> {
   profile<T> result;
   try {
     result = camera_.get_current_profile<T>();
-    if (cut_level_ != 0) {
+    if (cut_level_ != 0.F) {
       auto it = std::find_if(
           result.begin(), result.end(),
           [this](const data_point<T> &i) { return cut_level_ > i.x; });
