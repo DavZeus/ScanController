@@ -12,9 +12,10 @@ class program_arguments {
 
   boost::program_options::variables_map vm_;
 
-  // Program program_arguments description
+  // Descriptions
   constexpr static std::string_view help_desc{"produce help message"};
-  constexpr static std::string_view com_desc{"COM port number"};
+  constexpr static std::string_view com_desc{
+      "COM port number of Arduino board"};
   constexpr static std::string_view steps_desc{
       "number of steps required for one revolution of drive"};
   constexpr static std::string_view distance_desc{"camera distance"};
@@ -23,9 +24,23 @@ class program_arguments {
   constexpr static std::string_view save_desc{"save point data in file"};
   constexpr static std::string_view load_desc{
       "use file with point data (one file)"};
+  constexpr static std::string_view method_desc{
+      "reconstruction method: 0 - advancing front, 1 - scale space, 2 - "
+      "Poisson"};
+  constexpr static std::string_view additional_desc{
+      "additional preprocess point cloud: 1 - simplification, 2 - remove "
+      "outliers, 4 - smoothing and A bitwise AND values"};
+
+  // Default values
+
+  inline static float com_value = 4.F;
+  inline static unsigned steps_value = 200U;
+  inline static float cut_value = 0.F;
+  inline static unsigned method_value = 0;
+  inline static unsigned additional_value = 0;
 
 public:
-  // Program option switches
+  // Switches
   constexpr static std::string_view help_switch{"help"};
   constexpr static std::string_view com_switch{"com"};
   constexpr static std::string_view steps_switch{"steps"};
@@ -33,9 +48,11 @@ public:
   constexpr static std::string_view cut_switch{"cut"};
   constexpr static std::string_view save_switch{"save"};
   constexpr static std::string_view load_switch{"load"};
+  constexpr static std::string_view method_switch{"method"};
+  constexpr static std::string_view additional_switch{"add"};
 
   // Get program program_arguments description (for console output mainly)
-  auto get_allowed_options() const
+  [[nodiscard]] auto get_allowed_options() const
       -> const boost::program_options::options_description &;
   // Process program program_arguments
   auto parse(int argc, char *argv[]) -> void;

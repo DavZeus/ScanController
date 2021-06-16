@@ -6,8 +6,7 @@ auto sc::program_arguments::get_allowed_options() const
 }
 
 auto sc::program_arguments::parse(int argc, char *argv[]) -> void {
-  const auto desc = get_allowed_options();
-  store(parse_command_line(argc, argv, desc), vm_);
+  store(parse_command_line(argc, argv, description_), vm_);
   notify(vm_);
 }
 
@@ -25,25 +24,26 @@ sc::program_arguments::program_arguments()
     : description_("Allowed program program_arguments") {
   description_.add_options()(help_switch.data(), help_desc.data())(
       com_switch.data(),
-      boost::program_options::value<short>()->default_value(
-          static_cast<short>(4)),
+      boost::program_options::value<decltype(com_value)>()->default_value(
+          com_value),
       com_desc.data())(
       steps_switch.data(),
-      boost::program_options::value<unsigned>()->default_value(200U),
+      boost::program_options::value<decltype(steps_value)>()->default_value(
+          steps_value),
       steps_desc.data())(distance_switch.data(),
                          boost::program_options::value<float>(),
                          distance_desc.data())(
       cut_switch.data(),
-      boost::program_options::value<float>()->default_value(0.F),
+      boost::program_options::value<decltype(cut_value)>()->default_value(
+          cut_value),
       cut_desc.data())(save_switch.data(), save_desc.data())(
       load_switch.data(), boost::program_options::value<std::string>(),
       load_desc.data())(
-      "method",
-      boost::program_options::value<int>()->default_value(static_cast<int>(0)),
-      "reconstruction method: 0 - advancing front, 1 - scale "
-      "space, 2 - Poisson")(
-      "add",
-      boost::program_options::value<int>()->default_value(static_cast<int>(3)),
-      "additional preprocess point cloud: 0 - simplification, 1 - "
-      "remove outliers, 2 - smoothing, 3 - all");
+      method_switch.data(),
+      boost::program_options::value<decltype(method_value)>()->default_value(
+          method_value),
+      method_desc.data())(
+      additional_switch.data(),
+      boost::program_options::value<decltype(method_value)>()->default_value(7),
+      additional_desc.data());
 }
