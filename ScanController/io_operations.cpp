@@ -10,6 +10,15 @@
 #include <iomanip>
 #include <sstream>
 
+auto sc::io::generate_simple_time_string() -> std::string {
+  std::stringstream time_parse;
+  auto time =
+      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  auto tm = *std::localtime(&time);
+  time_parse << std::put_time(&tm, "%Y%m%d%H%M%S") << std::flush;
+  return time_parse.str();
+}
+
 auto sc::io::generate_time_string() -> std::string {
   std::stringstream time_parse;
   auto time =
