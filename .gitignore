@@ -338,6 +338,12 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
 ScanController/res.txt
 *.txt
+
+# Models
 *.stl
+
+# Saved images folder
+images-*
