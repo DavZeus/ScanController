@@ -15,7 +15,7 @@ class camera_handler {
 
   static constexpr double exposure_time = 10000.;
 
-  static constexpr cv::MorphShapes erosion_type{cv::MORPH_CROSS};
+  static constexpr cv::MorphShapes erosion_type{cv::MORPH_ELLIPSE};
   static constexpr int erosion_size = 2;
 
   static constexpr uint8_t mono_white = 255;
@@ -28,6 +28,13 @@ class camera_handler {
 
   // Apply erosion to obtained images
   static auto preprocess_image(cv::Mat &image) -> void;
+
+#ifndef NDEBUG
+  std::string save_folder_;
+
+  auto make_image_folder() -> void;
+  auto save_image(const cv::Mat &image) const -> void;
+#endif
 
   template <std::floating_point T = float>
   static auto make_profile(const cv::Mat &image) -> profile<T>;
@@ -81,10 +88,15 @@ auto camera_handler::filter_profile(profile<T> &profile) -> void {
 
 template <std::floating_point T>
 auto camera_handler::get_current_profile() -> profile<T> {
-  auto images = take_photo();
-  preprocess_image(images);
-  auto obtained_profiles = make_profile<T>(images);
-  filter_profile<T>(obtained_profiles);
-  return obtained_profiles;
+  auto image = take_photo();
+  preprocess_image(image);
+
+#ifndef NDEBUG
+  save_image(image);
+#endif
+
+  auto profile = make_profile<T>(image);
+  filter_profile<T>(profile);
+  return profile;
 }
 } // namespace sc

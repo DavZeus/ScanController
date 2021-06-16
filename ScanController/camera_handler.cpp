@@ -6,6 +6,11 @@
 
 #include <opencv2/core.hpp>
 
+#ifndef NDEBUG
+#include "io_operations.h"
+#include <opencv2/imgcodecs.hpp>
+#endif
+
 auto sc::camera_handler::take_photo() -> cv::Mat {
   Pylon::CGrabResultPtr result;
 
@@ -33,7 +38,24 @@ auto sc::camera_handler::preprocess_image(cv::Mat &image) -> void {
     }
   });
   cv::erode(image, image, structuring_element);
+  cv::Mat res{image.cols, image.rows, image.type()};
+  cv::rotate(image, res, cv::ROTATE_90_CLOCKWISE);
+  image = res;
 }
+
+#ifndef NDEBUG
+auto sc::camera_handler::make_image_folder() -> void {
+  save_folder_ = "images-" + io::generate_simple_time_string();
+  std::filesystem::create_directory(save_folder_);
+}
+
+auto sc::camera_handler::save_image(const cv::Mat &image) const -> void {
+  cv::imwrite(save_folder_ + "\\img-" + io::generate_simple_time_string() +
+                  ".png",
+              image);
+}
+
+#endif
 
 auto sc::camera_handler::initialize() -> void {
   camera_.Attach(Pylon::CTlFactory::GetInstance().CreateFirstDevice());
@@ -59,4 +81,8 @@ auto sc::camera_handler::initialize() -> void {
   Pylon::CIntegerParameter(node_map, "Height").SetToMaximum();
   Pylon::CBooleanParameter(node_map, "CenterX").SetValue(true);
   Pylon::CBooleanParameter(node_map, "CenterY").SetValue(true);
+
+#ifndef NDEBUG
+  make_image_folder();
+#endif
 }
