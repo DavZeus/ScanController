@@ -33,7 +33,7 @@ class program_arguments {
 
   // Default values
 
-  inline static unsigned com_value = 4.F;
+  inline static unsigned com_value = 4;
   inline static unsigned steps_value = 200U;
   inline static float cut_value = 0.F;
   inline static unsigned method_value = 0;
