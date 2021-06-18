@@ -31,7 +31,7 @@ auto sc::io::generate_time_string() -> std::string {
 auto sc::io::write_mesh(const surface_mesh &mesh,
                         std::filesystem::path filename) -> void {
   if (filename.empty()) {
-    filename = "model-" + generate_time_string() + ".stl";
+    filename = "model-" + generate_simple_time_string() + ".stl";
   } else if (filename.extension().empty()) {
     filename += ".stl";
   } else if (filename.extension() != "stl") {
