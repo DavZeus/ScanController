@@ -38,6 +38,9 @@ auto sc::io::write_mesh(const surface_mesh &mesh,
     throw std::exception("Extenstion is not supported");
   }
   std::ofstream file(filename);
+  if (!file) {
+    throw std::exception("Can not create model file");
+  }
   CGAL::write_STL(mesh, file);
   // Force write content to file
   file.flush();
