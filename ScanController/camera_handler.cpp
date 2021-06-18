@@ -45,13 +45,12 @@ auto sc::camera_handler::preprocess_image(cv::Mat &image) -> void {
 
 #ifndef NDEBUG
 auto sc::camera_handler::make_image_folder() -> void {
-  save_folder_ = "images-" + io::generate_simple_time_string();
+  save_folder_ = "images-" + io::generate_time_string();
   std::filesystem::create_directory(save_folder_);
 }
 
 auto sc::camera_handler::save_image(const cv::Mat &image) const -> void {
-  cv::imwrite(save_folder_ + "\\img-" + io::generate_simple_time_string() +
-                  ".png",
+  cv::imwrite(save_folder_ + "\\img-" + io::generate_time_string() + ".png",
               image);
 }
 

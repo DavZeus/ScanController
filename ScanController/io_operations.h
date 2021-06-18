@@ -11,9 +11,6 @@ namespace io {
 constexpr auto data_header = "x-z";
 constexpr auto end_profile = "-";
 
-// Get simple version of current time as string
-auto generate_simple_time_string() -> std::string;
-
 // Get current time as string
 auto generate_time_string() -> std::string;
 // Write mesh to stl file
