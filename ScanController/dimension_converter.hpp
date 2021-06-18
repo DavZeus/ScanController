@@ -59,7 +59,7 @@ auto dimension_converter<T>::convert_circle(model_profiles<T> &&d_points,
   unsigned angle_multiplier = 0;
 
   for (const auto &profile : d_points) {
-    if (required_angle > angle * static_cast<T>(angle_multiplier)) {
+    if (angle * static_cast<T>(angle_multiplier) > required_angle) {
       break;
     }
 
